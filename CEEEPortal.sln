@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CEEEPortal", "CEEEPortal\CEEEPortal.csproj", "{C7B20A75-540D-4850-B5AF-2D8C48640CC2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CEEEPortal.Tests", "CEEEPortal.Tests\CEEEPortal.Tests.csproj", "{ED23257D-E17C-4C08-AE77-0D145CA261A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CEEEDataAccess", "CEEEDataAccess\CEEEDataAccess.csproj", "{4E50487D-0CFA-4577-9140-45EFCC460DA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CEEEServices", "CEEEServices\CEEEServices.csproj", "{B3E7C3C4-9CF6-4C1E-88DC-AB226A8F7937}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C7B20A75-540D-4850-B5AF-2D8C48640CC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7B20A75-540D-4850-B5AF-2D8C48640CC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7B20A75-540D-4850-B5AF-2D8C48640CC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7B20A75-540D-4850-B5AF-2D8C48640CC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED23257D-E17C-4C08-AE77-0D145CA261A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED23257D-E17C-4C08-AE77-0D145CA261A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED23257D-E17C-4C08-AE77-0D145CA261A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED23257D-E17C-4C08-AE77-0D145CA261A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E50487D-0CFA-4577-9140-45EFCC460DA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E50487D-0CFA-4577-9140-45EFCC460DA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E50487D-0CFA-4577-9140-45EFCC460DA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E50487D-0CFA-4577-9140-45EFCC460DA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3E7C3C4-9CF6-4C1E-88DC-AB226A8F7937}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3E7C3C4-9CF6-4C1E-88DC-AB226A8F7937}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3E7C3C4-9CF6-4C1E-88DC-AB226A8F7937}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3E7C3C4-9CF6-4C1E-88DC-AB226A8F7937}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.2\lib\NET35
+	EndGlobalSection
+EndGlobal

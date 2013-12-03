@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="cf8b203621ca45e0b852d250578d82cd" Name="Diagram1" ZoomLevel="73">
+        <EntityTypeShape EntityType="ProNetTestModel.Client" Width="1.5" PointX="0.5" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProNetTestModel.DocumentContent" Width="1.5" PointX="11.25" PointY="9" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProNetTestModel.Document" Width="1.5" PointX="12.125" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProNetTestModel.DocumentStatu" Width="1.5" PointX="8.75" PointY="10" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProNetTestModel.EmploymentType" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProNetTestModel.JobAttribute" Width="1.5" PointX="5.125" PointY="6.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProNetTestModel.JobCategory" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProNetTestModel.JobDocument" Width="1.5" PointX="8.25" PointY="5.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="ProNetTestModel.Job" Width="1.5" PointX="3.25" PointY="0.75" IsExpanded="true" />
+        <AssociationConnector Association="ProNetTestModel.FK_Jobs_ClientHirerLegalEntity" ManuallyRouted="false" />
+        <AssociationConnector Association="ProNetTestModel.FK_Jobs_Clients" ManuallyRouted="false" />
+        <AssociationConnector Association="ProNetTestModel.FK_DocumentContent_Documents" ManuallyRouted="false" />
+        <AssociationConnector Association="ProNetTestModel.FK_Documents_DocumentStatus" ManuallyRouted="false" />
+        <AssociationConnector Association="ProNetTestModel.FK_JobDocuments_Documents" ManuallyRouted="false" />
+        <AssociationConnector Association="ProNetTestModel.FK_JobAttributes_Jobs" ManuallyRouted="false" />
+        <AssociationConnector Association="ProNetTestModel.FK_JobDocuments_Jobs" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="ProNetTestModel.Location" Width="1.5" PointX="1.25" PointY="17.375" />
+        <AssociationConnector Association="ProNetTestModel.FK_Clients_Locations" />
+        <EntityTypeShape EntityType="ProNetTestModel.webpages_Membership" Width="1.5" PointX="4.8376324720855948" PointY="29.808960704975277" />
+        <EntityTypeShape EntityType="ProNetTestModel.webpages_OAuthMembership" Width="1.5" PointX="7.5" PointY="30.75" />
+        <EntityTypeShape EntityType="ProNetTestModel.webpages_Roles" Width="1.5" PointX="4.25" PointY="19" />
+        <EntityTypeShape EntityType="ProNetTestModel.Object" Width="1.5" PointX="0.93394300012567222" PointY="12.199097460228529" />
+        <AssociationConnector Association="ProNetTestModel.FK_Clients_Objects" />
+        <AssociationConnector Association="ProNetTestModel.FK_Objects_Locations" />
+        <EntityTypeShape EntityType="ProNetTestModel.ObjectType" Width="1.5" PointX="10.161624954157334" PointY="5.2456350648988206" />
+        <AssociationConnector Association="ProNetTestModel.FK_Objects_ObjectTypes" ManuallyRouted="true" >
+          <ConnectorPoint PointX="10.75" PointY="7.8071907552083317" />
+          <ConnectorPoint PointX="9.9932202132774943" PointY="8.6487903724424715" />
+          <ConnectorPoint PointX="9.8817797867225057" PointY="8.7727210349397726" />
+          <ConnectorPoint PointX="7.5244702132774934" PointY="11.39423771590941" />
+          <ConnectorPoint PointX="7.4130297867225057" PointY="11.518168378406712" />
+          <ConnectorPoint PointX="5" PointY="14.201650390625" />
+          <ConnectorPoint PointX="5" PointY="14.031274396370563" />
+          <ConnectorPoint PointX="4.625" PointY="14.031274396370563" />
+          <ConnectorPoint PointX="4.625" PointY="14.201650390625" />
+          <ConnectorPoint PointX="3.125" PointY="12.125" />
+          <ConnectorPoint PointX="2.75" PointY="12.125" />
+          <ConnectorPoint PointX="2.75" PointY="14.201650390624998" />
+          <ConnectorPoint PointX="2.7083333333333335" PointY="14.201650390624998" />
+          <ConnectorPoint PointX="2.5416666666666665" PointY="14.201650390624998" />
+          <ConnectorPoint PointX="2.375" PointY="14.201650390624998" />
+        </AssociationConnector>
+        <EntityTypeShape EntityType="ProNetTestModel.User" Width="1.5" PointX="9.375" PointY="16.5" />
+        <AssociationConnector Association="ProNetTestModel.FK_Clients_Users" />
+        <AssociationConnector Association="ProNetTestModel.FK_Clients_Users1" />
+        <AssociationConnector Association="ProNetTestModel.FK_Documents_Users" />
+        <AssociationConnector Association="ProNetTestModel.FK_Documents_Users1" />
+        <AssociationConnector Association="ProNetTestModel.FK_Objects_Users" />
+        <AssociationConnector Association="ProNetTestModel.FK_Users_Users" />
+        <AssociationConnector Association="ProNetTestModel.FK_Users_Users1" />
+        <AssociationConnector Association="ProNetTestModel.FK_Users_Users2" />
+        <EntityTypeShape EntityType="ProNetTestModel.CeeeOpportunityType" Width="1.5" PointX="2.875" PointY="15.125" />
+        <EntityTypeShape EntityType="ProNetTestModel.ClientContact" Width="1.5" PointX="13.375" PointY="17.875" />
+        <EntityTypeShape EntityType="ProNetTestModel.Person" Width="1.5" PointX="2.875" PointY="12.375" />
+        <AssociationConnector Association="ProNetTestModel.FK_ClientContacts_Clients" />
+        <AssociationConnector Association="ProNetTestModel.FK_ClientContacts_EmploymentTypes" />
+        <AssociationConnector Association="ProNetTestModel.FK_ClientContacts_Person" />
+        <AssociationConnector Association="ProNetTestModel.FK_ClientContacts_Person1" />
+        <AssociationConnector Association="ProNetTestModel.FK_ClientContacts_Users" />
+        <AssociationConnector Association="ProNetTestModel.FK_ClientContacts_Users1" />
+        <AssociationConnector Association="ProNetTestModel.FK_Clients_ClientContacts" />
+        <AssociationConnector Association="ProNetTestModel.FK_Person_Objects" />
+        <AssociationConnector Association="ProNetTestModel.FK_Person_Users" />
+        <AssociationConnector Association="ProNetTestModel.FK_Person_Users1" />
+        <EntityTypeShape EntityType="ProNetTestModel.CeeeClientAttribute" Width="1.5" PointX="7.5" PointY="17.75" />
+        <EntityTypeShape EntityType="ProNetTestModel.CeeeJobType" Width="1.5" PointX="5.375" PointY="3.75" />
+        <EntityTypeShape EntityType="ProNetTestModel.CeeeUser" Width="1.5" PointX="10.588527196360996" PointY="28.879731653667861" />
+        <EntityTypeShape EntityType="ProNetTestModel.CeeeVolunteeringOneDayChallenge" Width="2.5" PointX="5" PointY="45" />
+        <EntityTypeShape EntityType="ProNetTestModel.CeeeVolunteeringPlacement" Width="2.375" PointX="8.125" PointY="46.5" />
+        <EntityTypeShape EntityType="ProNetTestModel.CeeeVolunteeringType" Width="2.625" PointX="12" PointY="48" />
+        <AssociationConnector Association="ProNetTestModel.FK_CeeeClientAttribute_CeeeUser" />
+        <AssociationConnector Association="ProNetTestModel.FK_CeeeClientAttribute_Client" />
+        <AssociationConnector Association="ProNetTestModel.FK_CeeeOpportunityType_CeeeUser" />
+        <AssociationConnector Association="ProNetTestModel.FK_CeeeUser_Clients" />
+        <AssociationConnector Association="ProNetTestModel.FK_CeeeVolunteeringOneDayChallenge_CeeeVolunteeringType" />
+        <AssociationConnector Association="ProNetTestModel.FK_CeeeVolunteeringPlacement_CeeeVolunteeringType" />
+        <AssociationConnector Association="ProNetTestModel.webpages_UsersInRoles" />
+        <EntityTypeShape EntityType="ProNetTestModel.CeeeJobContractType" Width="1.5" PointX="3.1248025722451516" PointY="22.559652532711464" />
+        <EntityTypeShape EntityType="ProNetTestModel.CeeeJobDescription" Width="1.5" PointX="3.0409134007249561" PointY="12.673945671261263" />
+        <AssociationConnector Association="ProNetTestModel.FK_CeeeJobDescription_CeeeJobContractType" />
+        <AssociationConnector Association="ProNetTestModel.FK_JobContractType_JobDescription" />
+        <AssociationConnector Association="ProNetTestModel.FK_CeeeJobDescription_CeeeJOneDayChallenge" />
+        <AssociationConnector Association="ProNetTestModel.FK_CeeeJobDescription_Job" />
+        <AssociationConnector Association="ProNetTestModel.FK_CeeeJobDescription_JobType" />
+        <AssociationConnector Association="ProNetTestModel.FK_CeeeJobDescription_VolunteeringPlacement" />
+        </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
