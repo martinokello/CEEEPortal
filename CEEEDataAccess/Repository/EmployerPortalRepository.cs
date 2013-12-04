@@ -275,7 +275,7 @@ namespace CEEEDataAccess.Repository
                 job.ClientId = client.ClientID;
 
                 job.StartDate = graduateOrStudentJob.StartDate;
-                
+
                 job.Notes = graduateOrStudentJob.OpportunityDescription;
                 job.JobRefNo = ("J0" + client.ClientID + Guid.NewGuid().ToString()).Substring(0, 10);
                 job.Published = "N";
@@ -336,7 +336,7 @@ namespace CEEEDataAccess.Repository
 
                     if (client == null)
                     {
-                            client = dbContext.Clients.SingleOrDefault(p => p.ClientID == job.ClientId);
+                        client = dbContext.Clients.SingleOrDefault(p => p.ClientID == job.ClientId);
                         if (client == null) return false;
                     }
                     var jobTypeValue = graduateOrStudentJob.JobType.ToString();
@@ -432,7 +432,7 @@ namespace CEEEDataAccess.Repository
                 var jobDescription = new CeeeJobDescription();
 
                 var client = GetClientByID(clientID);
-                
+
                 if (client == null)
                 {
                     using (var dbContext = new ProNetTestEntities())
@@ -477,11 +477,13 @@ namespace CEEEDataAccess.Repository
                 var fileNames = sandwichPlacementJob.Filenames;
                 var fileBytes = sandwichPlacementJob.FileUploads;
                 //SaveFiles:
-                if(fileNames.Count > 0)
-                for(int i=0;i<fileNames.Count; i++){
 
-                    SaveJobDocumentByJobId(job.JobId, fileBytes[i], fileNames[i].Substring(fileNames[i].LastIndexOf(".")),fileNames[i]);
-                }
+                if (fileNames != null && fileNames.Count > 0)
+                    for (int i = 0; i < fileNames.Count; i++)
+                    {
+
+                        SaveJobDocumentByJobId(job.JobId, fileBytes[i], fileNames[i].Substring(fileNames[i].LastIndexOf(".")), fileNames[i]);
+                    }
                 return true;
             }
             catch (DbEntityValidationException ex)
@@ -509,8 +511,8 @@ namespace CEEEDataAccess.Repository
 
                     if (client == null)
                     {
-                            client = dbContext.Clients.SingleOrDefault(p => p.ClientID == job.ClientId);
-                            if (client == null) return false;
+                        client = dbContext.Clients.SingleOrDefault(p => p.ClientID == job.ClientId);
+                        if (client == null) return false;
                     }
 
                     job.ClientId = client.ClientID;
@@ -539,6 +541,15 @@ namespace CEEEDataAccess.Repository
                     jobDescription.JobDescription = sandwichPlacementJob.OpportunityDescription;
                     dbContext.SaveChanges();
 
+                    var fileNames = sandwichPlacementJob.Filenames;
+                    var fileBytes = sandwichPlacementJob.FileUploads;
+                    //SaveFiles:
+                    if (fileNames != null && fileNames.Count > 0)
+                        for (int i = 0; i < fileNames.Count; i++)
+                        {
+
+                            UpdatejobDocumentByJobId(job.JobId, fileBytes[i], fileNames[i].Substring(fileNames[i].LastIndexOf(".")), fileNames[i]);
+                        }
                     return true;
                 }
             }
@@ -566,8 +577,8 @@ namespace CEEEDataAccess.Repository
 
                 if (client == null)
                 {
-                        client = dbContext.Clients.SingleOrDefault(p => p.ClientID == job.ClientId);
-                        if (client == null) return new OneDayChallengeCharityVolunteerTO();
+                    client = dbContext.Clients.SingleOrDefault(p => p.ClientID == job.ClientId);
+                    if (client == null) return new OneDayChallengeCharityVolunteerTO();
                 }
                 var oneDayChallenge = jobDescription.CeeeVolunteeringOneDayChallenge;
 
@@ -592,15 +603,12 @@ namespace CEEEDataAccess.Repository
                 oneDayChallengeCharityJob.Location = oneDayChallenge.Location;
                 oneDayChallengeCharityJob.MeetingPoint = oneDayChallenge.MeetingPoint;
                 oneDayChallengeCharityJob.MeetingTime = oneDayChallenge.MeetingTime;
-                oneDayChallengeCharityJob.ProjectEventTitle = oneDayChallenge.ProjectEventTitle;
-                oneDayChallengeCharityJob.RiskAssesmentFormFile = oneDayChallenge.RiskAssesmentFile;
-                oneDayChallengeCharityJob.SessionPlanFile = oneDayChallenge.SessionPlanFile;
                 oneDayChallengeCharityJob.WhatWillBeDoing = oneDayChallenge.WhatWillBeDoing;
                 oneDayChallengeCharityJob.When = oneDayChallenge.When;
 
                 oneDayChallengeCharityJob.OpportunityCategoryType = new OpportunityCategoryType();
 
-                var opportunityTypes = oneDayChallenge.OpportunityTypes.Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries);
+                var opportunityTypes = oneDayChallenge.OpportunityTypes.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (var opportunityType in opportunityTypes)
                 {
@@ -637,7 +645,7 @@ namespace CEEEDataAccess.Repository
                     if (opportunityType == "Politics")
                         oneDayChallengeCharityJob.OpportunityCategoryType.Politics = opportunityType;
                     if (opportunityType == "SocialEnterprise")
-                    oneDayChallengeCharityJob.OpportunityCategoryType.SocialEnterprise = opportunityType;
+                        oneDayChallengeCharityJob.OpportunityCategoryType.SocialEnterprise = opportunityType;
                     if (opportunityType == "SportsOutdoor")
                         oneDayChallengeCharityJob.OpportunityCategoryType.SportsOutdoor = opportunityType;
                     if (opportunityType == "VulnerableAdults")
@@ -711,7 +719,6 @@ namespace CEEEDataAccess.Repository
                 oneDayChallenge.OpportunityTypes = opportunityTypes;
                 oneDayChallenge.ExperienceNeeded = oneDayChallengeCharityJob.ExperienceNeeded;
                 oneDayChallenge.FinishingTime = oneDayChallengeCharityJob.FinishingTime;
-                oneDayChallenge.BudgetPlanFile = oneDayChallengeCharityJob.BudgetFormFile;
                 oneDayChallenge.HasCarriedOutRiskAssesment =
                     !string.IsNullOrEmpty(oneDayChallengeCharityJob.HasCarriedOutRiskAssesment) ? true : false;
                 oneDayChallenge.HasInsuranceLiability =
@@ -723,8 +730,6 @@ namespace CEEEDataAccess.Repository
                 oneDayChallenge.MeetingPoint = oneDayChallengeCharityJob.MeetingPoint;
                 oneDayChallenge.MeetingTime = oneDayChallengeCharityJob.MeetingTime;
                 oneDayChallenge.ProjectEventTitle = oneDayChallengeCharityJob.ProjectEventTitle;
-                oneDayChallenge.RiskAssesmentFile = oneDayChallengeCharityJob.RiskAssesmentFormFile;
-                oneDayChallenge.SessionPlanFile = oneDayChallengeCharityJob.SessionPlanFile;
                 oneDayChallenge.WhatWillBeDoing = oneDayChallengeCharityJob.WhatWillBeDoing;
                 oneDayChallenge.When = oneDayChallengeCharityJob.When;
 
@@ -745,13 +750,13 @@ namespace CEEEDataAccess.Repository
 
 
                 //SaveFiles:
-                if(!string.IsNullOrEmpty(oneDayChallengeCharityJob.BudgetFormFileName))
-                SaveJobDocumentByJobId(job.JobId, oneDayChallengeCharityJob.BudgetFormFile, oneDayChallengeCharityJob.BudgetFormFileName.Substring(oneDayChallengeCharityJob.BudgetFormFileName.LastIndexOf(".")), oneDayChallengeCharityJob.BudgetFormFileName);
+                if (!string.IsNullOrEmpty(oneDayChallengeCharityJob.BudgetFormFileName))
+                    SaveJobDocumentByJobId(job.JobId, oneDayChallengeCharityJob.BudgetFormFile, oneDayChallengeCharityJob.BudgetFormFileName.Substring(oneDayChallengeCharityJob.BudgetFormFileName.LastIndexOf(".")), oneDayChallengeCharityJob.BudgetFormFileName);
                 //SaveFiles:
-                if(!string.IsNullOrEmpty(oneDayChallengeCharityJob.RiskAssesmentFormFileName))
-                SaveJobDocumentByJobId(job.JobId, oneDayChallengeCharityJob.RiskAssesmentFormFile, oneDayChallengeCharityJob.RiskAssesmentFormFileName.Substring(oneDayChallengeCharityJob.RiskAssesmentFormFileName.LastIndexOf(".")), oneDayChallengeCharityJob.RiskAssesmentFormFileName);
+                if (!string.IsNullOrEmpty(oneDayChallengeCharityJob.RiskAssesmentFormFileName))
+                    SaveJobDocumentByJobId(job.JobId, oneDayChallengeCharityJob.RiskAssesmentFormFile, oneDayChallengeCharityJob.RiskAssesmentFormFileName.Substring(oneDayChallengeCharityJob.RiskAssesmentFormFileName.LastIndexOf(".")), oneDayChallengeCharityJob.RiskAssesmentFormFileName);
                 //SaveFiles:
-                if(!string.IsNullOrEmpty(oneDayChallengeCharityJob.SessionPlanFileName))
+                if (!string.IsNullOrEmpty(oneDayChallengeCharityJob.SessionPlanFileName))
                     SaveJobDocumentByJobId(job.JobId, oneDayChallengeCharityJob.SessionPlanFile, oneDayChallengeCharityJob.SessionPlanFileName.Substring(oneDayChallengeCharityJob.SessionPlanFileName.LastIndexOf(".")), oneDayChallengeCharityJob.SessionPlanFileName);
                 return true;
             }
@@ -820,30 +825,27 @@ namespace CEEEDataAccess.Repository
                     oneDayChallenge.Location = oneDayChallengeCharityJob.Location;
                     oneDayChallenge.MeetingPoint = oneDayChallengeCharityJob.MeetingPoint;
                     oneDayChallenge.MeetingTime = oneDayChallengeCharityJob.MeetingTime;
-                    oneDayChallenge.ProjectEventTitle = oneDayChallengeCharityJob.ProjectEventTitle;
-                    oneDayChallenge.RiskAssesmentFile = oneDayChallengeCharityJob.RiskAssesmentFormFile;
-                    oneDayChallenge.SessionPlanFile = oneDayChallengeCharityJob.SessionPlanFile;
                     oneDayChallenge.WhatWillBeDoing = oneDayChallengeCharityJob.WhatWillBeDoing;
                     oneDayChallenge.When = oneDayChallengeCharityJob.When;
                     var opportunityTypes = string.Empty;
                     opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.Administration + ",";
                     opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.Animals + ",";
                     opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.ChildrenYouth + ",";
-                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.CultureHeritage  + ",";
-                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.Education  + ",";
-                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.Environment  + ",";
-                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.EthnicityReligion  + ",";
-                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.EventProjectManagement  + ",";
-                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.GovernanceFinance  + ",";
-                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.HealthSocialCare  + ",";
-                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.IT  + ",";
-                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.InternationalDevelopment  + ",";
-                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.LawCriminalJustice  + ",";
-                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.MediaCreative  + ",";
-                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.MentoringAdvice  + ",";
-                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.Politics  + ",";
-                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.SocialEnterprise  + ",";
-                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.SportsOutdoor  + ",";
+                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.CultureHeritage + ",";
+                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.Education + ",";
+                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.Environment + ",";
+                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.EthnicityReligion + ",";
+                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.EventProjectManagement + ",";
+                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.GovernanceFinance + ",";
+                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.HealthSocialCare + ",";
+                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.IT + ",";
+                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.InternationalDevelopment + ",";
+                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.LawCriminalJustice + ",";
+                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.MediaCreative + ",";
+                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.MentoringAdvice + ",";
+                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.Politics + ",";
+                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.SocialEnterprise + ",";
+                    opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.SportsOutdoor + ",";
                     opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.VulnerableAdults;
 
                     oneDayChallenge.OpportunityTypes = opportunityTypes;
@@ -854,6 +856,16 @@ namespace CEEEDataAccess.Repository
                     jobDescription.CeeeVolunteeringOneDayChallenge = oneDayChallenge;
                     dbContext.SaveChanges();
 
+                    //SaveFiles:
+                    if (!string.IsNullOrEmpty(oneDayChallengeCharityJob.BudgetFormFileName))
+                        UpdatejobDocumentByJobId(job.JobId, oneDayChallengeCharityJob.BudgetFormFile, oneDayChallengeCharityJob.BudgetFormFileName.Substring(oneDayChallengeCharityJob.BudgetFormFileName.LastIndexOf(".")), oneDayChallengeCharityJob.BudgetFormFileName);
+                    //SaveFiles:
+                    if (!string.IsNullOrEmpty(oneDayChallengeCharityJob.RiskAssesmentFormFileName))
+                        UpdatejobDocumentByJobId(job.JobId, oneDayChallengeCharityJob.RiskAssesmentFormFile, oneDayChallengeCharityJob.RiskAssesmentFormFileName.Substring(oneDayChallengeCharityJob.RiskAssesmentFormFileName.LastIndexOf(".")), oneDayChallengeCharityJob.RiskAssesmentFormFileName);
+                    //SaveFiles:
+                    if (!string.IsNullOrEmpty(oneDayChallengeCharityJob.SessionPlanFileName))
+                        UpdatejobDocumentByJobId(job.JobId, oneDayChallengeCharityJob.SessionPlanFile, oneDayChallengeCharityJob.SessionPlanFileName.Substring(oneDayChallengeCharityJob.SessionPlanFileName.LastIndexOf(".")), oneDayChallengeCharityJob.SessionPlanFileName);
+                    return true;
                     return true;
                 }
             }
@@ -899,7 +911,7 @@ namespace CEEEDataAccess.Repository
 
                 volunteeringPlacementJob.Location = placementInternationalVol.Location;
                 volunteeringPlacementJob.DurationNeeded = placementInternationalVol.DurationNeeded;
-                var HowToPost = !string.IsNullOrEmpty(placementInternationalVol.HowToPostApplication)?placementInternationalVol.HowToPostApplication.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries): new  string[]{""};
+                var HowToPost = !string.IsNullOrEmpty(placementInternationalVol.HowToPostApplication) ? placementInternationalVol.HowToPostApplication.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries) : new string[] { "" };
                 foreach (var howPost in HowToPost)
                 {
                     if (howPost.StartsWith("ApplicationReceiveWebsite"))
@@ -1080,7 +1092,7 @@ namespace CEEEDataAccess.Repository
 
                 placementInternationalVol.Location = volunteeringPlacementJob.Location;
                 placementInternationalVol.DurationNeeded = volunteeringPlacementJob.DurationNeeded;
-                placementInternationalVol.HowToPostApplication =volunteeringPlacementJob.ApplicationReceiveEmail+","+
+                placementInternationalVol.HowToPostApplication = volunteeringPlacementJob.ApplicationReceiveEmail + "," +
                 volunteeringPlacementJob.ApplicationReceiveWebsite + ",";
                 placementInternationalVol.NumberOfPositions = volunteeringPlacementJob.NumberOfVacancies;
                 placementInternationalVol.RoleTitle = volunteeringPlacementJob.RoleTitle;
@@ -1133,6 +1145,9 @@ namespace CEEEDataAccess.Repository
                 //SaveFiles:
                 if (!string.IsNullOrEmpty(volunteeringPlacementJob.ApplicationFormFileName))
                     SaveJobDocumentByJobId(job.JobId, volunteeringPlacementJob.ApplicationFormFile, volunteeringPlacementJob.ApplicationFormFileName.Substring(volunteeringPlacementJob.ApplicationFormFileName.LastIndexOf(".")), volunteeringPlacementJob.ApplicationFormFileName);
+
+                if (!string.IsNullOrEmpty(volunteeringPlacementJob.RoleDescriptionFileName))
+                    SaveJobDocumentByJobId(job.JobId, volunteeringPlacementJob.RoleDescriptionFile, volunteeringPlacementJob.RoleDescriptionFileName.Substring(volunteeringPlacementJob.RoleDescriptionFileName.LastIndexOf(".")), volunteeringPlacementJob.RoleDescriptionFileName);
                 return true;
             }
             catch (DbEntityValidationException ex)
@@ -1169,7 +1184,7 @@ namespace CEEEDataAccess.Repository
                     {
                         if (client == null)
                             client = dbContext.Clients.SingleOrDefault(p => p.ClientID == job.ClientId);
-                        if(client == null)return false;
+                        if (client == null) return false;
                     }
 
                     job.ClientId = client.ClientID;
@@ -1296,7 +1311,12 @@ namespace CEEEDataAccess.Repository
                     placementInternationalVol.VolunteeringTypeID = volunteeringTypes.VolunteeringTypeID;
                     jobDescription.VolunteeringPlacmentID = placementInternationalVol.VolunteeringJobID;
                     dbContext.SaveChanges();
-
+                    //SaveFiles:
+                    if (!string.IsNullOrEmpty(volunteeringPlacementJob.ApplicationFormFileName))
+                        UpdatejobDocumentByJobId(job.JobId, volunteeringPlacementJob.ApplicationFormFile, volunteeringPlacementJob.ApplicationFormFileName.Substring(volunteeringPlacementJob.ApplicationFormFileName.LastIndexOf(".")), volunteeringPlacementJob.ApplicationFormFileName);
+                    
+                    if (!string.IsNullOrEmpty(volunteeringPlacementJob.RoleDescriptionFileName))
+                        UpdatejobDocumentByJobId(job.JobId, volunteeringPlacementJob.RoleDescriptionFile, volunteeringPlacementJob.RoleDescriptionFileName.Substring(volunteeringPlacementJob.RoleDescriptionFileName.LastIndexOf(".")), volunteeringPlacementJob.RoleDescriptionFileName);
                     return true;
                 }
             }
@@ -1309,7 +1329,85 @@ namespace CEEEDataAccess.Repository
                 return false;
             }
         }
-        private bool SaveJobDocumentByJobId(int jobId, byte[] docContent,string fileExtension,string fileName)
+
+        private bool UpdatejobDocumentByJobId(int jobId, byte[] docContent, string fileExtension, string fileName)
+        {
+            using (var dbContext = new ProNetTestEntities())
+            {
+                try
+                {
+                    var jobDocuments1 = from jd in dbContext.JobDocuments
+                                        from d in dbContext.Documents
+                                        from dc in dbContext.DocumentContents
+                                        where jd.DocumentId == d.DocumentID && jd.JobId == jobId && dc.DocumentId == d.DocumentID &&
+                                              d.Description == fileName
+                                        select new {Document = d, DocumentContent = dc};
+                    if (jobDocuments1.Any())
+                    {
+                        var document = jobDocuments1.ToList()[0].Document;
+                        var documentContent = jobDocuments1.ToList()[0].DocumentContent;
+
+
+                        if (document.Description == fileName)
+                        {
+                            document.Description = fileName;
+                            document.UpdatedOn = DateTime.Now;
+                            documentContent.FileExtension = fileExtension;
+                            documentContent.Document = docContent;
+                            dbContext.SaveChanges();
+                            return true;
+                        }
+
+                    }
+                    else
+                    {
+                        var jobDocument = new JobDocument();
+                        var document = new Document();
+                        var documentContent = new DocumentContent();
+
+                        documentContent.CreatedOn = DateTime.Now;
+                        documentContent.CreatedUserId = 1;
+                        documentContent.Document = docContent;
+                        documentContent.FileExtension = fileExtension;
+
+                        document.CreatedOn = DateTime.Now;
+                        document.CreatedUserId = 1;
+                        document.Description = fileName;
+                        document.Publishable = "Y";
+                        document.Incoming = "N";
+                        dbContext.Documents.Add(document);
+                        dbContext.SaveChanges();
+
+                        documentContent.DocumentId = document.DocumentID;
+                        document.DocumentContent = documentContent;
+                        dbContext.DocumentContents.Add(documentContent);
+
+                        dbContext.SaveChanges();
+
+                        jobDocument.DocumentId = document.DocumentID;
+                        jobDocument.CreatedOn = DateTime.Now;
+                        jobDocument.CreatedUserId = 1;
+                        jobDocument.JobId = jobId;
+                        jobDocument.Completed = "N";
+                        dbContext.JobDocuments.Add(jobDocument);
+                        dbContext.SaveChanges();
+                        return true;
+                    }
+
+                }
+                catch (DbEntityValidationException ex)
+                {
+                    return false;
+                }
+                catch (Exception e)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private bool SaveJobDocumentByJobId(int jobId, byte[] docContent, string fileExtension, string fileName)
         {
             using (var dbContext = new ProNetTestEntities())
             {
@@ -1327,6 +1425,8 @@ namespace CEEEDataAccess.Repository
                     document.CreatedOn = DateTime.Now;
                     document.CreatedUserId = 1;
                     document.Description = fileName;
+                    document.Publishable = "Y";
+                    document.Incoming = "N";
                     dbContext.Documents.Add(document);
                     dbContext.SaveChanges();
 
@@ -1336,9 +1436,12 @@ namespace CEEEDataAccess.Repository
 
                     dbContext.SaveChanges();
 
+                    jobDocument.DocumentId = document.DocumentID;
                     jobDocument.CreatedOn = DateTime.Now;
                     jobDocument.CreatedUserId = 1;
                     jobDocument.JobId = jobId;
+                    jobDocument.Completed = "N";
+                    dbContext.JobDocuments.Add(jobDocument);
 
                     dbContext.SaveChanges();
 
@@ -1361,24 +1464,24 @@ namespace CEEEDataAccess.Repository
             using (var dbContext = new ProNetTestEntities())
             {
                 jobDetails = from j in dbContext.Jobs
-                       from jd in dbContext.CeeeJobDescriptions
-                       where j.JobId == jd.JobID && j.ClientId == clientID
-                       select new JobUpdateTO
-                           {
-                               JobId = j.JobId,
-                               JobTitle = j.JobTitle,
-                               JobDescription = jd.JobDescription,
-                               IsVolunteering = jd.IsVolunteering,
-                               DateCreated = j.CreatedOn,
-                               DateUpdate = j.UpdatedOn
-                           };
+                             from jd in dbContext.CeeeJobDescriptions
+                             where j.JobId == jd.JobID && j.ClientId == clientID
+                             select new JobUpdateTO
+                                 {
+                                     JobId = j.JobId,
+                                     JobTitle = j.JobTitle,
+                                     JobDescription = jd.JobDescription,
+                                     IsVolunteering = jd.IsVolunteering,
+                                     DateCreated = j.CreatedOn,
+                                     DateUpdate = j.UpdatedOn
+                                 };
 
                 list = new List<JobUpdateTO>();
                 foreach (var jd in jobDetails)
                     list.Add(jd);
                 return list;
             }
-            
+
         }
         public AddressTO GetClientAddressByName(string clientName)
         {

@@ -33,6 +33,7 @@ namespace CEEEPortal.DataAccessTOs
         public string WebSiteReciept { get; set; }
         public int? NumberOfVacancies { get; set; }
         public byte[] RoleDescriptionFile { get; set; }
+        public string RoleDescriptionFileName { get; set; }
         public string HasInsuranceLiability { get; set; }
         public string HasNoInsuranceLiability { get; set; }
         public string HasCarriedOutRiskAssesment { get; set; }
