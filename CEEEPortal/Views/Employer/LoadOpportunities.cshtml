@@ -1,0 +1,82 @@
+﻿@{
+    ViewBag.Title = "LoadOpportunities";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#graduateJobs').click(function () {
+            window.location.href = '/Employer/StudentOrGraduateJobsForm?id=0';
+        });
+        $('#studentJobs').click(function () {
+            window.location.href = '/Employer/StudentOrGraduateJobsForm?id=1';
+        });
+        $('#sandwichPlacmentJobs').click(function () {
+            window.location.href = '/Employer/SandwichPlacementsInternships';
+        });
+        $('#volunteeringJobs').click(function () {
+            window.location.href = '/Employer/Volunteering';
+        });
+        $('#events').click(function () {
+            window.location.href = '#';
+        });
+    });
+</script>
+
+<div class="main-content-wrapper" style="height: 700px;">
+    <h2 style="margin-left: 20px; margin-top: 7px;">Opportunity Registration</h2>
+    <div class="body-content" style="text-align: center;">
+
+        <div class="tabular-load-employment">
+            <div class="opportunity-row">
+                <div class="opportunity-cell">
+                    <a href="/Employer/StudentOrGraduateJobsForm?id=0"><img src="/Images/Employer/graduateJobs.png" /></a>
+                </div>
+                <div class="opportunity-cell">
+                    <a href="/Employer/StudentOrGraduateJobsForm?id=1"><img src="/Images/Employer/StudentJobs.png" /></a>
+                </div>
+                <div class="opportunity-cell">
+                    <a href="/Employer/SandwichPlacementsInternships"><img src="/Images/Employer/SandwichPlacementJobs.png" /> </a>
+                </div>
+                <div class="opportunity-cell">
+                    <a href="/Employer/Volunteering"> <img src="/Images/Employer/studentVolunteerJobs.png" /> </a>
+                </div>
+                <div class="opportunity-cell">
+                    <a href="#"><img src="/Images/Employer/EventName.png" /> </a>
+                </div>
+                <div style="clear: both;"></div>
+            </div>
+            <div class="opportunity-row">
+                <div class="opportunity-cell">
+                    <div class="opp-links" id="graduateJobs">
+                        Click here for more information
+                    </div>
+                </div>
+                <div class="opportunity-cell">
+                    <div class="opp-links" id="studentJobs">
+                        Click here for more information
+                    </div>
+                </div>
+                <div class="opportunity-cell">
+                    <div class="opp-links" id="sandwichPlacmentJobs">
+                        Click here for more information e.g. blurb about placement timings, courses
+                    </div>
+                </div>
+                <div class="opportunity-cell">
+                    <div class="opp-links" id="volunteeringJobs">
+                        Click here for more information
+                    </div>
+                </div>
+                <div class="opportunity-cell">
+                    <div class="opp-links" id="events">
+                        Click here for more information
+                    </div>
+                </div>
+                <div style="clear: both;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div style="clear: both;"><br/></div>
+</div>

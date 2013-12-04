@@ -1,0 +1,51 @@
+﻿@model IEnumerable<CEEEDataAccess.DataAccessTOs.JobUpdateTO>
+@{
+    ViewBag.Title = "UpdateJobDetails";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style type="text/css">
+    a { color: white;}
+</style>
+
+<div>
+    @section TwoColumnSection
+    {
+        <div class="main-content-wrapper">
+            <h2 style="margin-left: 20px; margin-top: 7px;">Update Job Details</h2>
+
+            <div id="MainSection" style="color:white;">
+                <table>
+                    <tr>
+                        <th>Job ID</th>
+                        <th>Job Title</th>
+                        <th>Job Description</th>
+                        <th>Is Volunteering</th>
+                        <th>Date Created</th>
+                        <th>Date Updated</th>
+                    </tr>
+
+                    @if (Model != null)
+                    {
+                        foreach (var jobDetail in Model)
+                        {
+                            <tr>
+                                <td><a href="/Employer/UpdateJobDetail?jobId=@jobDetail.JobId">@jobDetail.JobId</a></td>
+                                <td>@jobDetail.JobTitle</td>
+                                <td>@jobDetail.JobDescription</td>
+                                <td>@jobDetail.IsVolunteering.ToString()</td>
+                                <td>@jobDetail.DateCreated.ToString("dd/MM/yyyy")</td>
+                                <td>@(jobDetail.DateUpdate != null?((DateTime)jobDetail.DateUpdate).ToString("dd/MM/yyyy"): "Not Updated")</td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </div>
+
+            <div id="RightColSection">
+                &nbsp;
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+    }
+
+</div>

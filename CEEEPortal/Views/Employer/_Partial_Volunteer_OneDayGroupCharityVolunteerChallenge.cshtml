@@ -1,0 +1,261 @@
+﻿@using CEEEPortal.Models
+@model CEEEPortal.Models.OneDayChallengeCharityVolunteerViewModel
+<script type="text/javascript">
+    function IsValidTimes() {
+        var isValid = true;
+        var startTime = $('#MeetingTime').prop('value');
+        var endTime = $('#FinishingTime').prop('value');
+
+        var valid = (startTime.search(/^\d{2}:\d{2}$/) != -1) &&
+            (startTime.substr(0, 2) >= 0 && startTime.substr(0, 2) <= 24) &&
+            (startTime.substr(3, 2) >= 0 && startTime.substr(3, 2) <= 59) &&
+            (endTime.search(/^\d{2}:\d{2}$/) != -1) &&
+            (endTime.substr(0, 2) >= 0 && endTime.substr(0, 2) <= 24) &&
+            (endTime.substr(3, 2) >= 0 && endTime.substr(3, 2) <= 59);
+
+        var hourStart = parseInt(startTime.substr(0, 2));
+        var hourEnd = parseInt(endTime.substr(0, 2));
+        var minsStart = parseInt(startTime.substr(3, 2));
+        var minsEnd = parseInt(endTime.substr(3, 2));
+
+        var validEndGreaterStart = null;
+
+        if (hourEnd > hourStart) validEndGreaterStart = true;
+        else if (hourEnd == hourStart && minsEnd > minsStart) validEndGreaterStart = true;
+        else validEndGreaterStart = false;
+        isValid = valid && validEndGreaterStart;
+        return isValid;
+    }
+    $(document).ready(function () {
+        $.validator.unobtrusive.parse($('#VolunteerForm'));
+        $('#IsCordinatedByUniversity').click(function () {
+            var isChecked = $(this).prop('checked');
+            if (isChecked == true) {
+                $('div#HasRiskAssesmentArea').css('display', 'block');
+                $('div#NotRiskAssesmentArea').css('display', 'none');
+            } else {
+                $('div#NotRiskAssesmentArea').css('display', 'block');
+                $('div#HasRiskAssesmentArea').css('display', 'none');
+            }
+        });
+
+        $('#IsNotCordinatedByUniversity').click(function () {
+            var isChecked = $(this).prop('checked');
+            if (isChecked == true) {
+                $('div#HasRiskAssesmentArea').css('display', 'none');
+                $('div#NotRiskAssesmentArea').css('display', 'block');
+            } else {
+                $('div#NotRiskAssesmentArea').css('display', 'none');
+                $('div#HasRiskAssesmentArea').css('display', 'block');
+            }
+        });
+
+        $('div#hasInsurance input[type="checkbox"]').click(function () {
+            var $ckbox = $(this);
+            $("div#hasInsurance input:checked").each(function () {
+                $(this).prop("checked", false);
+            });
+            $ckbox.prop("checked", true);
+        });
+        $('div#hasRiskAssesment input[type="checkbox"]').click(function () {
+            var $ckbox = $(this);
+            $("div#hasRiskAssesment input:checked").each(function () {
+                $(this).prop("checked", false);
+            });
+            $ckbox.prop("checked", true);
+        });
+        $('div#CordinatedByUniversitySec input[type="checkbox"]').click(function () {
+            var $ckbox = $(this);
+            $("div#CordinatedByUniversitySec input:checked").each(function () {
+                $(this).prop("checked", false);
+            });
+            $ckbox.prop("checked", true);
+        });
+
+        $("#When").datepicker({ dateFormat: "dd/mm/yy" });
+
+        $("#SubmitSubSection").click(function () {
+            //debugger;
+            //$('#VolunteerForm').validate();
+            //insurance ticked?
+            var InsuranceChecked = false;
+            $('div#hasInsurance input[type="checkbox"]').each(function () {
+                if ($(this).prop("checked") == true) {
+                    InsuranceChecked = true;
+                    return true;
+                }
+            });
+
+            //riskAssesment ticked?
+            var riskAssessment = false;
+            $('div#hasRiskAssesment input[type="checkbox"]').each(function () {
+                if ($(this).prop("checked") == true) {
+                    riskAssessment = true;
+                    return true;
+                }
+            });
+            
+            //riskAssesment ticked?
+            var inCollaborationWithUni = false;
+            $('div#CordinatedByUniversitySec input[type="checkbox"]').each(function () {
+                if ($(this).prop("checked") == true) {
+                    inCollaborationWithUni = true;
+                    return true;
+                }
+            });
+            
+            $.validator.unobtrusive.parse($('#VolunteerForm'));
+            var mvcValidation = $('#VolunteerForm').valid();
+            var isValid = IsValidTimes();
+
+            if (mvcValidation == true) {
+                $('div.validation-summary-errors').css('display', 'none'); if (!riskAssessment) {
+                    var div = "<div class='validationSummary'><ul><li>Risk assessment question needs answer.</li></ul>";
+                    $('div.validationSummary').apppend(div);
+                }
+                if (!InsuranceChecked) {
+                    var div = "<div class='validationSummary'><ul><li>Public insurance liability question needs answer.</li></ul>";
+                    $('div.validationSummary').apppend(div);
+                }
+                if (!inCollaborationWithUni) {
+                    var div = "<div class='validationSummary'><ul><li>Question with respect to collaboration with University needs answer.</li></ul>";
+                    $('div.validationSummary').apppend(div);
+                }
+                if (!isValid) {
+                    var div = "<div class='validationSummary'><ul><li>Start time and end time should be in format HH:MM, and end time greater than start</li></ul>";
+                    $('div.validationSummary').apppend(div);
+                }
+            } else {
+                var li = "<li>Start time and end time should be in format HH:MM, and end time greater than start</li>";
+                if (!isValid)
+                    $('div.validation-summary-errors ul').append(li);
+                    var li = "<li>Risk assessment question needs answer.</li>";
+                    var li2 = "<li>Public insurance liability question needs answer.</li>";
+                    var li3 = "<li>Question with respect to collaboration with University needs answer.</li>"
+                if (!riskAssessment)
+                    $('div.validation-summary-errors ul').append(li);
+                if (!InsuranceChecked)
+                    $('div.validation-summary-errors ul').append(li2);
+                if (!inCollaborationWithUni)
+                        $('div.validation-summary-errors ul').append(li3);
+            }            
+            debugger;
+            return isValid && mvcValidation && InsuranceChecked && riskAssessment && inCollaborationWithUni;
+        });
+    });
+</script>
+
+<div id="VolunteeringSubSection">
+    <br />
+    <div class="labelFreeTextArea" style="border-style: solid; border-width: thin;" id="HoverEffect"></div>
+    <div>
+        @Html.Label("Project/Event Title*", new { @class = "label2" })
+        @Html.TextBox("ProjectEventTitle", null, new { @class = "textBox2" })
+        <div style="clear: both;"></div>
+    </div>
+    <div>
+        @Html.Label("Location*", new { @class = "label2" })
+        @Html.TextBox("Location", null, new { @class = "textBox2" })
+        <div style="clear: both;"></div>
+    </div>
+    <div>
+        <label class="labelFreeTextArea">*Please fill in the following details for your opportunity</label>
+    </div>
+    <div>
+        @Html.Label("When:*", new { @class = "label2" })
+        @Html.TextBox("When", null, new { @class = "textBox2", @id = "When" })
+        <div style="clear: both;"></div>
+    </div>
+    <div>
+        @Html.Label("Meeting Time:*", new { @class = "label2" })
+        @Html.TextBox("MeetingTime", null, new { @class = "textBox2", @id = "MeetingTime" })
+        <div style="clear: both;"></div>
+    </div>
+    <div>
+        @Html.Label("Finishing Time:*", new { @class = "label2" })
+        @Html.TextBox("FinishingTime", null, new { @class = "textBox2", @id = "FinishingTime" })
+        <div style="clear: both;"></div>
+    </div>
+    <div>
+        @Html.Label("Meeting Point*", new { @class = "label2" })
+        @Html.TextBox("MeetingPoint", null, new { @class = "textBox2" })
+        <div style="clear: both;"></div>
+    </div>
+    <div>
+        <label class="labelFreeTextArea">*What will I be doing?</label>
+        <br />
+        <div class="labelFreeTextArea">
+            @Html.TextArea("WhatWillBeDoing", null, new { @cols = 70, @rows = 10, @class = "freeTextArea", @title = "What will I be doing?" })
+            <br />
+        </div>
+    </div>
+    <div>
+        <label class="labelFreeTextArea">*What experience will I need?</label>
+        <br />
+        <div class="labelFreeTextArea">
+            @Html.TextArea("ExperienceNeeded", null, new { @cols = 70, @rows = 10, @class = "freeTextArea", @title = "What experience will I need?" })
+            <br />
+        </div>
+    </div>
+    <div id="CordinatedByUniversitySec">
+        <div>
+            <label class="labelFreeTextArea">Is your event ran in collaboration with the university’s volunteering service?</label>
+        </div>
+        <input type="checkbox" name="IsCordinatedByUniversity" class="checkBox" value="" id="IsCordinatedByUniversity" checked="@(Model != null && Model.IsCordinatedByUniversity != null)" />
+        <label class="label5">Yes</label>
+        <input type="checkbox" name="IsNotCordinatedByUniversity" class="checkBox" value="IsNotCordinatedByUniversity" id="IsNotCordinatedByUniversity" checked="@(Model != null && Model.IsNotCordinatedByUniversity != null)" />
+        <label class="label5">No</label>
+        <div style="clear: both;"></div>
+    </div>
+    <div id="HasRiskAssesmentArea" style="display: none;">
+        <div class="labelFreeTextArea">Upload relevant forms</div>
+        <div>
+            <div>
+                <label class="labelFreeTextArea" style="display: inline-block;">Risk assesment:</label><br />
+                <input type="file" class="OrdinaryButtonInline" name="RiskAssesmentFormFile" style="color: white; display: inline-block;" />
+                <div style="clear: both;"></div>
+            </div>
+            <div>
+                <label class="labelFreeTextArea" style="display: inline-block;">Session Plan:</label><br />
+                <input type="file" class="OrdinaryButtonInline" name="SessionPlanFile" style="color: white; display: inline-block;" />
+                <div style="clear: both;"></div>
+            </div>
+            <div>
+                <label class="labelFreeTextArea" style="display: inline-block;">Budget Form:</label><br />
+                <input type="file" class="OrdinaryButtonInline" name="BudgetFormFile" style="color: white; display: inline-block;" />
+                <div style="clear: both;"></div>
+            </div>
+        </div>
+    </div>
+    <div id="NotRiskAssesmentArea">
+    <div class="checkboxList">
+        <span style="float: left;" class="labelFreeTextArea">Do you have public liability insurance which covers our volunteers?*</span>
+        <div style="clear: both;"></div>
+        <div id="hasInsurance">
+            <input type="checkbox" name="HasInsuranceLiability" class="checkBox" value="HasInsuranceLiability" id="HasInsuranceLiability" checked="@(Model != null && Model.HasInsuranceLiability != null)" />
+            <label class="label5">Yes</label>
+            <input type="checkbox" title="Please note we cannot advertise this vacancy if you cannot meet this criteria" name="HasNoInsuranceLiability" class="checkBox" value="HasNoInsuranceLiability" id="HasNoInsuranceLiability" checked="@(Model != null && Model.HasNoInsuranceLiability != null)" />
+            <label class="label5">No</label>
+            <div style="clear: both;"></div>
+        </div>
+    </div>
+    <div class="checkboxList">
+        <div class="labelFreeTextArea">Have you carried out risk assessments and health and safety checks for volunteers to participate in this activity?*</div>
+        <div style="clear: both;">
+        </div>
+        <div id="hasRiskAssesment">
+            <input type="checkbox" name="HasCarriedOutRiskAssesment" class="checkBox" value="HasCarriedOutRiskAssesment" id="HasCarriedOutRiskAssesment" checked="@(Model != null && Model.HasCarriedOutRiskAssesment != null)" />
+            <label class="label5">Yes</label>
+            <input type="checkbox" title="Please note we cannot advertise this vacancy if you cannot meet this criteria" name="HasNotCarriedOutRiskAssesment" class="checkBox" value="HasNotCarriedOutRiskAssesment" id="HasNotCarriedOutRiskAssesment" checked="@(Model != null && Model.HasNoInsuranceLiability != null)" />
+            <label class="label5">No</label>
+            <div style="clear: both;"></div>
+        </div>
+    </div>
+    </div>
+    <div class="labelFreeTextArea">
+        By submitting this form you understand that the volunteer is not engaged in University business or as a student, as part of student activities or any course, but is engaging in volunteering in their own time. The volunteer will be explicitly working within the host organisation’s policies and procedures, not the University’s, including Child Protection where applicable.
+    </div>
+    <div id="SubmitSection">
+        <input type="submit" id="SubmitSubSection" value="submit" class="btnSubmit" />
+    </div>
+</div>

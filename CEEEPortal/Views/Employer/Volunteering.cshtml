@@ -1,0 +1,164 @@
+﻿@using CEEEPortal.Models
+@{
+    ViewBag.Title = "VolunteeringTypes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    var hoverInfo = "";
+    
+    $(document).ready(function () {
+        //GetVolunteeringViewtype
+        $('#OpportunityType').change(function () {
+            var view = $(this).prop('value');
+            var actionUrl = "";
+            
+            switch(view) {
+                case '@VolunteeringTypes.VolunteerPlacement.ToString()':
+                    actionUrl = "/Employer/VolunteeringPlacement";
+                    hoverInfo = "Volunteer Placements are suitable for charities and not for profit organizations who are seeking long term committed volunteers to support their cause. In particular students are looking for course related opportunities where they can develop in the role.";
+                    break;
+                case '@VolunteeringTypes.OneDayGroupVolunteerChallenge.ToString()':
+                    actionUrl = "/Employer/VolunteeringOneDayChallenge";
+                    hoverInfo = "One Day Challenges are for organisations who need groups of volunteers just for one day. These can range from educational workshops to painting murals to any other type of civic engagement activity except for charity fundraising events.";
+                    break;
+                case '@VolunteeringTypes.InternationalVolunteering.ToString()':
+                    actionUrl = "/Employer/VolunteeringPlacement";
+                    hoverInfo = "This is for organisations who wish to promote their international volunteering opportunity.";
+                    break;
+                case '@VolunteeringTypes.CharityFundraisingEvent.ToString()':
+                    actionUrl = "/Employer/VolunteeringOneDayChallenge";
+                    hoverInfo = "Charity Fundraising events are for organisations looking for a large number of student volunteers often for a day or a couple of days.  Roles are often based outside collecting money or supporting fundraising events in some capacity.";
+                    break;
+            }
+            $('#VolunteerForm').attr('action', actionUrl);
+            $.ajax({
+                url: "/Employer/GetVolunteeringViewtype?volunteeringType=" + view,
+                dataType: 'html',
+                success: function (data) {
+                    $('div#DynamicView').html(data);
+                    $('div#HoverEffect').html(hoverInfo);
+                },
+                error: function (data) {
+                }
+            });
+        });
+    });
+</script>
+
+<div>
+    @section TwoColumnSection
+        {
+        <div class="main-content-wrapper">
+            <h2 style="margin-left: 20px; margin-top: 7px;">Volunteering Employer Form</h2>
+
+
+            <div id="MainSection">
+
+                <form id="VolunteerForm" method="POST"  enctype="multipart/form-data">
+                    <div class="validationSummary">
+                        @Html.ValidationSummary(false)
+                    </div>
+                    <div>
+                        @Html.Label("Contact name*", new { @class = "label2" })
+                        @Html.TextBox("ContactName", null, new { @class = "textBox2" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div>
+                        <div style="clear: both;"></div>
+                        <div>
+                            @Html.Label("Contact email*", new { @class = "label2" })
+                            @Html.TextBox("ContactEmail", null, new { @class = "textBox2" })
+                            @Html.Label("Alternate email*", new { @class = "label2" })
+                            @Html.TextBox("AlternateEmail", null, new { @class = "textBox2" })
+                            <div style="clear: both;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        @Html.Label("Opportunity Category - multichoice", new { @class = "labelFreeTextArea" })
+                        <div style="clear: both;">
+                            <br />
+                        </div>
+                    </div>
+                    <div class="checkboxList">
+                        <input type="checkbox" name="OpportunityCategoryType.ChildrenYouth" class="checkBox" value="ChildrenYouth" id="ChildrenYouth" checked="@(Model != null && Model.OpportunityCategoryType.ChildrenYouth != null)" />
+                        @Html.Label("Children / Youth", new { @class = "label5" })
+                        <input type="checkbox" name="OpportunityCategoryType.VulnerableAdults" class="checkBox" value="VulnerableAdults" id="VulnerableAdults" checked="@(Model != null && Model.OpportunityCategoryType.VulnerableAdults != null)" />
+                        @Html.Label("Vulnerable Adults", new { @class = "label5" })
+                        <input type="checkbox" name="OpportunityCategoryType.Animals" class="checkBox" value="Animals" id="Animals" checked="@(Model != null && Model.OpportunityCategoryType.Animals != null)" />
+                        @Html.Label("Animals", new { @class = "label5" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div class="checkboxList">
+                        <input type="checkbox" name="OpportunityCategoryType.Environment" class="checkBox" value="Environment" id="Environment" checked="@(Model != null && Model.OpportunityCategoryType.Environment != null)" />
+                        @Html.Label("Environment", new { @class = "label5" })
+                        <input type="checkbox" name="OpportunityCategoryType.CultureHeritage" class="checkBox" value="CultureHeritage" id="CultureHeritage" checked="@(Model != null && Model.OpportunityCategoryType.CultureHeritage != null)" />
+                        @Html.Label("Culture/Heritage", new { @class = "label5" })
+                        <input type="checkbox" name="OpportunityCategoryType.EthnicityReligion" class="checkBox" value="EthnicityReligion" id="EthnicityReligion" checked="@(Model != null && Model.OpportunityCategoryType.EthnicityReligion != null)" />
+                        @Html.Label("Ethnicity/Religion", new { @class = "label5" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div class="checkboxList">
+                        <input type="checkbox" name="OpportunityCategoryType.HealthSocialCare" class="checkBox" value="HealthSocialCare" id="HealthSocialCare" checked="@(Model != null && Model.OpportunityCategoryType.HealthSocialCare != null)" />
+                        @Html.Label("Health/SocialCare", new { @class = "label5" })
+                        <input type="checkbox" name="OpportunityCategoryType.Education" class="checkBox" value="Education" id="Education" checked="@(Model != null && Model.OpportunityCategoryType.Education != null)" />
+                        @Html.Label("Education", new { @class = "label5" })
+                        <input type="checkbox" name="OpportunityCategoryType.Politics" class="checkBox" value="Politics" id="Politics" checked="@(Model != null && Model.OpportunityCategoryType.Politics != null)" />
+                        @Html.Label("Politics", new { @class = "label5" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div class="checkboxList">
+                        <input type="checkbox" name="OpportunityCategoryType.MentoringAdvice" class="checkBox" value="MentoringAdvice" id="MentoringAdvice" checked="@(Model != null && Model.OpportunityCategoryType.MentoringAdvice != null)" />
+                        @Html.Label("Mentoring/Advice", new { @class = "label5" })
+                        <input type="checkbox" name="OpportunityCategoryType.LawCriminalJustice" class="checkBox" value="LawCriminalJustice" id="LawCriminalJustice" checked="@(Model != null && Model.OpportunityCategoryType.LawCriminalJustice != null)" />
+                        @Html.Label("Law/Criminal Justice", new { @class = "label5" })
+                        <input type="checkbox" name="OpportunityCategoryType.IT" class="checkBox" value="IT" id="IT" checked="@(Model != null && Model.OpportunityCategoryType.IT != null)" />
+                        @Html.Label("IT", new { @class = "label5" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div class="checkboxList">
+                        <input type="checkbox" name="OpportunityCategoryType.GovernanceFinance" class="checkBox" value="GovernanceFinance" id="GovernanceFinance" checked="@(Model != null && Model.OpportunityCategoryType.GovernanceFinance != null)" />
+                        @Html.Label("Governance/Finance", new { @class = "label5" })
+                        <input type="checkbox" name="OpportunityCategoryType.MediaCreative" class="checkBox" value="MediaCreative" id="MediaCreative" checked="@(Model != null && Model.OpportunityCategoryType.MediaCreative != null)" />
+                        @Html.Label("Media/Creative", new { @class = "label5" })
+                        <input type="checkbox" name="OpportunityCategoryType.Administration" class="checkBox" value="Administration" id="Administration" checked="@(Model != null && Model.OpportunityCategoryType.Administration != null)" />
+                        @Html.Label("Administration", new { @class = "label5" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div class="checkboxList">
+                        <input type="checkbox" name="OpportunityCategoryType.SocialEnterprise" class="checkBox" value="SocialEnterprise" id="SocialEnterprise" checked="@(Model != null && Model.OpportunityCategoryType.SocialEnterprise != null)" />
+                        @Html.Label("Social Enterprise", new { @class = "label5" })
+                        <input type="checkbox" name="OpportunityCategoryType.InternationalDevelopment" class="checkBox" value="InternationalDevelopment" id="InternationalDevelopment" checked="@(Model != null && Model.OpportunityCategoryType.InternationalDevelopment != null)" />
+                        @Html.Label("International Development", new { @class = "label5" })
+                        <input type="checkbox" name="OpportunityCategoryType.EventProjectManagement" class="checkBox" value="EventProjectManagement" id="EventProjectManagement" checked="@(Model != null && Model.OpportunityCategoryType.EventProjectManagement != null)" />
+                        @Html.Label("Event/Project Management", new { @class = "label5" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div class="checkboxList">
+                        <input type="checkbox" name="OpportunityCategoryType.SportsOutdoor" class="checkBox" value="SportsOutdoor" id="SportsOutdoor" checked="@(Model != null && Model.OpportunityCategoryType.SportsOutdoor != null)" />
+                        @Html.Label("Sports/Outdoor", new { @class = "label5" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div>
+                        @Html.Label("Nature of Organisation*", new { @class = "label5" })
+                        @Html.DropDownList("OrganisationType", (IEnumerable<SelectListItem>)ViewBag.OrganisationT, new { @class = "dropDownListWide", @id = "OrganisationType"})
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div>
+                        @Html.Label("Is job opportunity a?*", new { @class = "label5" })
+                        @Html.DropDownList("OpportunityType", (IEnumerable<SelectListItem>)ViewBag.OpportunityT, new { @class = "dropDownListWide", @id = "OpportunityType" })
+                        <div style="clear: both;"></div>
+                    </div>
+
+
+                    <div id="DynamicView"></div>
+                </form>
+                </div>
+                <div id="RightColSection">
+                    &nbsp;
+                </div>
+
+            <div style="clear: both;"></div>
+
+        </div>
+    }
+</div>

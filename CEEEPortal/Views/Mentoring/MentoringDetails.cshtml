@@ -1,0 +1,345 @@
+﻿@using System.Text
+@using CEEEPortal.Models
+@model CEEEPortal.Models.MentorViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+    var index = 0;
+    function AddDateTimes() {
+        index++;
+        var rowDates = '<div id="TimeHolder' + index + '"><label class="lableTimes">Date:</label><input type="text" id="DropinDate' + index + '" name="DropinDate' + index + '" class="textBox"/>' +
+            '<div id="btnRemoveTime' + index + '" class="linkButton"  onclick="RemoveDateTime(\'btnRemoveTime' + index + '\');">Delete</div>' +
+            '<div style="clear: both;"></div></div>';
+        $('#DropCentreTimes').append(rowDates);
+        $("#DropinDate" + index).datepicker({ dateFormat: "dd/mm/yy" });
+    }
+    function RemoveDateTime(divChildToRemoveId) {
+        var divIndex = GetIndexToRemove(divChildToRemoveId);
+        $('div#TimeHolder' + divIndex).remove();
+    }
+
+    function GetIndexToRemove(divIdToRemove) {
+        var result = '';
+
+        for (var i = 0; i < divIdToRemove.length; i++) {
+            if (IsNumber(divIdToRemove.substr(i, 1))) {
+                result += divIdToRemove.substr(i, 1);
+            }
+        }
+        return result;
+    }
+    function IsNumber(n) {
+        return /^\d$/.test(n);
+    }
+    $(document).ready(function () {
+        $("#UsedDropInCentre").click(function () {
+            if ($(this).is(':checked')) {
+                $('#addUsedDropinTimes').css('display', 'block');
+            } else {
+                $('#addUsedDropinTimes').css('display', 'none');
+                $('div#DropCentreTimes').html('');
+                index = 0;
+            }
+        });
+        $('#Submit').click(function (e) {
+            //e.preventDefault();
+            debugger;
+            var isValid = false;
+            var mentorTypes = $('div.checkbox > input[type="checkbox"]:checked');
+            if (mentorTypes.size > 0) isValid = true;
+
+            $('#MentoringForm').validate();
+            var mvcValidation = $('#MentoringForm').valid();
+            if (mvcValidation == true) {
+                $('div.validation-summary-errors').css('display', 'none');
+                if (!isValid) {
+                    var div = "<div class='validationSummary'><ul><li>At least one mentor type should be chosen</li></ul>";
+                    $('div.validationSummary').html(div);
+                }
+            } else {
+                var li = "<li>At least one mentor type should be chosen</li>";
+                if (!isValid)
+                    $('div.validation-summary-errors ul').append(li);
+            }
+
+
+            return mvcValidation && isValid;
+        });
+        $('#addUsedDropinTimes').click(function () {
+            AddDateTimes(index);
+        });
+        $('#btnGetStudentDetails').click(function () {
+            var studentId = $('#StudentID').prop('value');
+            $.ajax({
+                url: '/Mentoring/GetStudent?studentID=' + studentId,
+                dataType: 'json',
+                success: function (data) {
+                    $('#CourseCode').val(data.CourseCode);
+                    $('#StudentID').val(data.StudentId);
+                    $('#StudentName').val(data.StudentName);
+                    $('#CourseName').val(data.CourseName);
+                    $('#YearOfStudy').val(data.YearOfStudy);
+                    $('#UWLEmail').val(data.UWLEmail);
+                    $('#PersonalEmail').val(data.PersonalEmail);
+                    $('#PhoneNo').val(data.PhoneNo);
+                },
+                error: function (data) {
+                }
+            });
+        });
+        $('#btnGetMentees').click(function () {
+            var mentorName = $('#MentorName').prop('value');
+            var html = "<ul>";
+            $.ajax({
+                url: '/Mentoring/GetMentees?mentorName=' + mentorName,
+                dataType: 'json',
+                success: function (data) {
+                    $.each(data, function (index, value) {
+                        html += "<li>" + value.MenteeName + " [" + value.StudentID + "]</li>";
+                    });
+                    html += "</ul>";
+
+                    $('#MenteeList').html(html);
+                },
+                error: function (data) {
+                }
+            });
+        });
+    });
+
+    function IsValidTimes() {
+        var isValid = true;
+        for (var i = 1; i <= index; i++) {
+            var startTime = $('#DropinStartTime' + i).prop('value');
+            var endTime = $('#DropinEndTime' + i).prop('value');
+
+            var valid = (startTime.search(/^\d{2}:\d{2}$/) != -1) &&
+                (startTime.substr(0, 2) >= 0 && startTime.substr(0, 2) <= 24) &&
+                (startTime.substr(3, 2) >= 0 && startTime.substr(3, 2) <= 59) &&
+                (endTime.search(/^\d{2}:\d{2}$/) != -1) &&
+                (endTime.substr(0, 2) >= 0 && endTime.substr(0, 2) <= 24) &&
+                (endTime.substr(3, 2) >= 0 && endTime.substr(3, 2) <= 59);
+
+            var hourStart = parseInt(startTime.substr(0, 2));
+            var hourEnd = parseInt(endTime.substr(0, 2));
+            var minsStart = parseInt(startTime.substr(3, 2));
+            var minsEnd = parseInt(endTime.substr(3, 2));
+
+            var validEndGreaterStart = null;
+
+            if (hourEnd > hourStart) validEndGreaterStart = true;
+            else if (hourEnd == hourStart && minsEnd > minsStart) validEndGreaterStart = true;
+            else validEndGreaterStart = false;
+
+            if ((valid && validEndGreaterStart) != true) {
+                isValid = false;
+                break;
+            }
+        }
+        return isValid;
+    }
+</script>
+<div>
+    @section TwoColumnSection
+    {
+        <div class="main-content-wrapper">
+            <h2 style="margin-left: 20px; margin-top: 7px;">Student Mentoring/Drop-in Service</h2>
+
+            <div id="MainSection">
+                @using (Html.BeginForm("MentoringDetails", "Mentoring", FormMethod.Post, new { @id = "MentoringForm" }))
+                {
+                    <div class="validationSummary">
+                        @Html.ValidationSummary(false)
+                    </div>
+                    <div id="StudentDetails">
+                        <div class="labelFreeTextArea" style="font-weight: bold; margin-top: 10px;">Student Details</div>
+                        <br />
+                        <div>
+                            @Html.Label("Student ID*", new { @class = "label" })
+                            @Html.TextBox("StudentID", null, new { @class = "textBox2", id = "StudentID" })
+                            <div id="btnGetStudentDetails" class="linkButton">Get Student</div>
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            @Html.Label("Student name*", new { @class = "label" })
+                            @Html.TextBox("StudentName", null, new { @class = "textBox2", id = "StudentName", @readonly = "readonly" })
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            @Html.Label("Course code*", new { @class = "label" })
+                            @Html.TextBox("CourseCode", null, new { @class = "textBox2", id = "CourseCode", @readonly = "readonly" })
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            @Html.Label("Course name*", new { @class = "label" })
+                            @Html.TextBox("CourseName", null, new { @class = "textBox2", id = "CourseName", @readonly = "readonly" })
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            @Html.Label("Year Of Study*", new { @class = "label" })
+                            @Html.TextBox("YearOfStudy", null, new { @class = "textBox2", id = "YearOfStudy", @readonly = "readonly" })
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            @Html.Label("UWL Email*", new { @class = "label" })
+                            @Html.TextBox("UWLEmail", null, new { @class = "textBox2", id = "UWLEmail", @readonly = "readonly" })
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            @Html.Label("Personal Email*", new { @class = "label" })
+                            @Html.TextBox("PersonalEmail", null, new { @class = "textBox2", id = "PersonalEmail" })
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            @Html.Label("Phone No*", new { @class = "label" })
+                            @Html.TextBox("PhoneNo", null, new { @class = "textBox2", id = "PhoneNo" })
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            @Html.Label("Gender*", new { @class = "label" })
+                            @Html.DropDownList("Gender", new List<SelectListItem> { new SelectListItem { Selected = Model == null, Text = "<<Choose>>", Value = "" }, new SelectListItem { Selected = Model != null && Model.Gender == Gender.Male, Text = "Male", Value = "Male" }, new SelectListItem { Selected = Model != null && Model.Gender == Gender.Female, Text = "Female", Value = "Female" } }, null, new { @class = "textBox2", id = "PhoneNo" })
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            <div class="labelFreeTextArea">Preferred Contact method*</div>
+                        </div>
+                        <div>
+                            @Html.RadioButton("PrefContactMethod", "UWLEmail", (Model != null && Model.PrefContactMethod.ToString() == "UWLEmail"), new { @class = "checkBox" })
+                            @Html.Label("UWL Email", new { @class = "label3" })
+                            @Html.RadioButton("PrefContactMethod", "PersonalEmail", (Model != null && Model.PrefContactMethod.ToString() == "PersonalEmail"), new { @class = "checkBox" })
+                            @Html.Label("Personal Email", new { @class = "label3" })
+                            <div style="clear: both;"></div>
+                        </div>
+                    </div>
+                    <div id="MentoringDetails">
+                        <div class="labelFreeTextArea" style="font-weight: bold; margin-top: 10px;">
+                            Mentor Details<br />
+                            If you are a mentor, please answer these questions
+                        </div>
+                        <div>
+                            <input type="checkbox" name="IsRegWithVolunteering" class="checkBox" value="IsRegWithVolunteering" id="IsRegWithVolunteering"  checked="@(Model != null && Model.IsRegWithVolunteering == "IsRegWithVolunteering")"/>
+                            @Html.Label("Registered with Volunteering?", new { @class = "label4" })
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="IsMentor" class="checkBox" value="IsMentor" id="IsMentor" checked="@(Model != null && Model.IsMentor == "IsMentor")" />
+                            @Html.Label("Is a mentor?", new { @class = "label3" })
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            <input type="checkbox" name="HasTrained" class="checkBox" value="HasTrained" id="HasTrained" checked="@(Model != null && Model.HasTrained == "HasTrained")" />
+                            @Html.Label("If mentor have you trained?", new { @class = "label3" })
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            <div>
+                                <div class="labelFreeTextArea">Mentor Type*</div>
+                            </div>
+                            <div class="checkBox">
+                                <div class="checkboxList">
+                                    <input type="checkbox" name="MentorType.PeerMentor" class="checkBox" value="PeerMentor" id="PeerMentor" checked="@(Model != null && Model.MentorType.PeerMentor != null)" />
+                                    @Html.Label("Peer Mentor", new { @class = "label5" })
+                                    <input type="checkbox" name="MentorType.GraduateMentor" class="checkBox" value="GraduateMentor" id="GraduateMentor" checked="@(Model != null && Model.MentorType.GraduateMentor != null)" />
+                                    @Html.Label("Graduate Mentor", new { @class = "label5" })
+                                    <div style="clear: both;"></div>
+                                </div>
+                                <div class="checkboxList">
+                                    <input type="checkbox" name="MentorType.DisabilityMentor" class="checkBox" value="DisabilityMentor" id="DisabilityMentor" checked="@(Model != null && Model.MentorType.DisabilityMentor != null)" />
+                                    @Html.Label("Disability Mentor", new { @class = "label5" })
+                                    <input type="checkbox" name="MentorType.InternationalMentor" class="checkBox" value="InternationalMentor" id="InternationalMentor" checked="@(Model != null && Model.MentorType.InternationalMentor != null)" />
+                                    @Html.Label("International Mentor", new { @class = "label5" })
+                                    <div style="clear: both;"></div>
+                                </div>
+                                <div class="checkboxList">
+                                    <input type="checkbox" name="MentorType.HigherEducationMentor" class="checkBox" value="HigherEducationMentor" id="HigherEducationMentor" checked="@(Model != null && Model.MentorType.HigherEducationMentor != null)" />
+                                    @Html.Label("HigherEducation Mentor", new { @class = "label5" })
+                                    <div style="clear: both;"></div>
+                                </div>
+                            </div>
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div id="TrainingHours">
+                            <div>
+                                @Html.Label("Training Hours", new { @class = "label" })
+                                @Html.TextBox("TrainingHours", null, new { @class = "textBox2", id = "TrainingHours" })
+                                <div style="clear: both;"></div>
+                            </div>
+                            <div>
+                                @Html.Label("Additional mentoring hours", new { @class = "label" })
+                                @Html.TextBox("AdditionalMentoringHours", null, new { @class = "textBox2", id = "AdditionalMentoringHours" })
+                                <div style="clear: both;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div id="MenteeDetials">
+                                <div class="labelFreeTextArea" style="font-weight: bold; margin-top: 10px;">Mentee Details</div>
+                                <div>
+                                    <input type="checkbox" name="IsMentee" class="checkBox" value="IsMentee" id="IsMentee" checked="@(Model != null && Model.IsMentee == "IsMentee")" />
+                                    @Html.Label("Is a mentee?", new { @class = "label3" })
+                                    <div style="clear: both;"></div>
+                                </div>
+                                <div>
+                                    <input type="checkbox" name="RequestMentor" class="checkBox" value="RequestMentor" id="RequestMentor" checked="@(Model != null && Model.RequestMentor == "RequestMentor")" />
+                                    @Html.Label("Requested Mentor?", new { @class = "label3" })
+                                    <div style="clear: both;"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <br />
+                                <div class="labelFreeTextArea">Mentees Paired with</div>
+                                <div id="MenteeList" style="color: white;">
+                                </div>
+
+                                <div id="btnGetMentees" class="linkButton">Get Mentees</div>
+
+                                <div style="clear: both;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="labelFreeTextArea" style="font-weight: bold; margin-top: 10px;">Drop-in Centre Usage</div>
+                            <div>
+                                <input type="checkbox" name="IsDropInUser" class="checkBox" value="IsDropInUser" id="IsDropInUser" checked="@(Model != null && Model.IsDropInUser == "IsMentor")" />
+                                @Html.Label("Is a Drop-in user?", new { @class = "label3" })
+                                <div style="clear: both;"></div>
+                            </div>
+                            <div>
+                                <input type="checkbox" name="UsedDropInCentre" class="checkBox" value="UsedDropInCentre" id="UsedDropInCentre" checked="@(Model != null && Model.UsedDropInCentre == "UsedDropInCentre")" />
+                                @Html.Label("Used Drop-in Centre?", new { @class = "label3" })
+                                <div id="addUsedDropinTimes" style="display: none;" class="linkButton">Add day</div>
+                                <div style="clear: both;"></div>
+                            </div>
+                            <div id="DropCentreTimes">
+                            </div>
+                        </div>
+                        @*                        <div>
+                            @Html.Label("Visits to Drop-in centre", new { @class = "label" })
+                            @Html.TextBox("VisitsToDropinCentre", null, new { @class = "textBox2", @id = "VisitsToDropinCentre", @readonly="readonly" })
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            @Html.Label("Training hours", new { @class = "label" })
+                            @Html.TextBox("TrainingHours", null, new { @class = "textBox2", @id = "TrainingHours", @readonly="readonly" })
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            @Html.Label("Countact hours with Mentee", new { @class = "label" })
+                            @Html.TextBox("ContactMenteeHours", null, new { @class = "textBox2", @id = "ContactMenteeHours", @readonly="readonly" })
+                            <div style="clear: both;"></div>
+                        </div>*@
+                        <div>
+                            <input type="submit" id="Submit" value="Submit" name="btnSubmitOrg" class="btnSubmit" />
+                        </div>
+                    </div>
+
+                }
+            </div>
+            <div id="RightColSection">
+                &nbsp;
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+    }
+</div>

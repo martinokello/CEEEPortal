@@ -1,0 +1,227 @@
+﻿@using CEEEPortal.Models
+@model CEEEPortal.Models.GraduateEmployerModel
+@{
+    ViewBag.Title = "GraduateJobs";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $.validator.unobtrusive.parse($('form#LoadOpp'));
+
+        $("#StartDate").datepicker({ dateFormat: "dd/mm/yy" });
+        $("#EndDate").datepicker({ dateFormat: "dd/mm/yy" });
+        $("#ClosingDate").datepicker({ dateFormat: "dd/mm/yy" });
+        
+        $('div.checkboxList input[type="checkbox"]').click(function () {
+            var $ckbox = $(this);
+            $("div.checkboxList input:checked").each(function () {
+                $(this).prop("checked", false);
+            });
+            $ckbox.prop("checked", true);
+        });
+
+        $('div.job-type-selection input[type="checkbox"]').click(function () {
+            var $ckbox = $(this);
+            $("div.job-type-selection input:checked").each(function () {
+                $(this).prop("checked", false);
+            });
+            $ckbox.prop("checked", true);
+        });
+
+        $('#btnOrgSubmit').click(function () {
+
+            $('div.validationSummary > ul').empty();
+            var hasCheck = false;
+            var hasCheck2 = false;
+            var li = "<li>One choice is required from Contract Offered</li>";
+            var l2 = "<li>Maximum allowed description word length is 50</li>";
+            var l3 = "<li>Job type required</li>";
+
+            var description = $('#OpportunityDescription').prop('value');
+            var correctDescLength = CheckMaxWords(description);
+            debugger;
+
+            $('div.checkboxList input[type="checkbox"]').each(function () {
+                hasCheck = $(this).prop('checked');
+                if (hasCheck == true) {
+                    return false;
+                } else return true;
+
+            });
+            
+            $('div.job-type-selection input[type="checkbox"]').each(function () {
+                hasCheck2 = $(this).prop('checked');
+                if (hasCheck2 == true) {
+                    return false;
+                } else return true;
+
+            });
+
+
+            $('form#LoadOpp').validate();
+            var mvcValidation = $('form#LoadOpp').valid();
+
+            if (mvcValidation == true) {
+                $('div.validation-summary-errors').css('display', 'none');
+                if (!hasCheck) {
+                    $('div.validationSummary > ul').append(li);
+                }
+                if (!hasCheck2) {
+                    $('div.validationSummary > ul').append(l3);
+                }
+                if (!correctDescLength) {
+
+                    var ul = $('div.validationSummary > ul');
+
+                    if (typeof (ul) != 'undefined') {
+                        ul.append(l2);
+                    } else {
+                        var ul2 = $('div.validationSummary ul');
+                        if (typeof (ul2) != 'undefined') {
+                            ul2.append(l2);
+                        } else {
+                            $('div.validationSummary ul').append(l2);
+                        }
+                    }
+                }
+            } else {
+
+                if (!hasCheck)
+                    $('div.validation-summary-errors ul').append(li);
+
+                if (!hasCheck2)
+                    $('div.validation-summary-errors ul').append(l3);
+                if (!correctDescLength) {
+                    $('div.validation-summary-errors ul').append(l2);
+                }
+            }
+            return hasCheck && hasCheck2 && mvcValidation && correctDescLength;
+        });
+
+
+    });
+
+    function CheckMaxWords(words) {
+        if (words == 'undefined' || words == null || words == '') return true;
+        return words.split(' ').length <= 50;
+    }
+</script>
+
+<div>
+    @section TwoColumnSection
+    {
+        <div class="main-content-wrapper">
+            <h2 style="margin-left: 20px; margin-top: 7px;">Update Graduate Student Job</h2>
+
+            <div id="MainSection">
+                @using (Html.BeginForm("UpdateGraduateStudentJob", "Employer", FormMethod.Post, new { @id = "LoadOpp" }))
+                {
+                    <div class="validationSummary">
+                        <ul></ul>
+                        @Html.ValidationSummary(false)
+                    </div>
+                    <div>
+                          <div class="labelFreeTextArea" style="font-weight: bold">Job Details</div>
+                        <br />
+                    </div>
+                    <div>
+                        @Html.Label("Job title*", new { @class = "lableTimes" })
+                        @Html.TextBox("JobTitle", null, new { @id = "JobTitle", @class="textBox2" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div class="job-type-selection">
+                        <br />
+                        <div>
+                        @Html.Label("This Job is* ", new { @class = "label3" })</div>
+                        <input type="checkbox" name="JobType" class="checkBox" value="FullTime" id="FullTime" checked="@(Model != null && Model.JobType.ToString()== "FullTime")" />                       
+                        @Html.Label("Full-time", new { @class = "label3" })
+                        <input type="checkbox" name="JobType" class="checkBox" value="PartTime" id="PartTime" checked="@(Model != null && Model.JobType.ToString()== "PartTime")" />
+                        @Html.Label("Part-time", new { @class = "label3" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div class="labelFreeTextArea">
+                        N.B. Current students can work up to 20 hours per week during term time
+                    </div>                 
+                    <div>
+                        @Html.Label("Hours per Week*", new { @class = "lableTimes" })
+                        @Html.TextBox("JobTitle", null, new { @id = "JobTitle", @class="textBox2" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div class="labelFreeTextArea">
+                        <br/>
+                        Contract offered as*:
+                    </div> 
+                    <div class="checkboxList">
+                        <input type="checkbox" name="ContractType" class="checkBox" value="Permanent" id="Permanent" checked="@(Model != null && Model.ContractType.ToString() == "Permanent")" />
+                        @Html.Label("Permanent", new { @class = "label3" })
+                        <input type="checkbox" name="ContractType" class="checkBox" value="Fixed" id="Fixed" checked="@(Model != null && Model.ContractType.ToString() == "Fixed")" />
+                        @Html.Label("Fixed", new { @class = "label3" })
+                        <input type="checkbox" name="ContractType" class="checkBox" value="CasualZeroHour" id="CasualZeroHour" checked="@(Model != null && Model.ContractType.ToString() == "CasualZeroHour")" />
+                        @Html.Label("Casual/Zero Hour", new { @class = "label3" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div class="checkboxList">
+                        <input type="checkbox" name="ContractType" class="checkBox" value="SelfEmployed" id="SelfEmployed" checked="@(Model != null && Model.ContractType.ToString() == "SelfEmployed")" />
+                        @Html.Label("Self Employed", new { @class = "label3" })
+                        <input type="checkbox" name="ContractType" class="checkBox" value="Other" id="Other" checked="@(Model != null && Model.ContractType.ToString() == "Other")" />
+                        @Html.Label("Other, specify", new { @class = "label3Adjacent" })
+                        @Html.TextBox("Other", null, new { @id = "Other", @class="textBox2"})
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div>
+                        @Html.Label("Number of Positions*", new { @class = "lableTimes" })
+                        @Html.TextBox("NumberOfOpportunities", null, new { @class = "textBox2", id = "NumberOfOpportunities" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div>
+                        <label class="lableTimes">Start date*:</label>
+                        @Html.TextBox("StartDate", null, new { @id = "StartDate", @class="textBox" })
+                        <label class="lableTimes">End date*:</label>
+                        @Html.TextBox("EndDate", null, new { @id = "EndDate", @class="textBox" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div>
+                        <label class="lableTimes">Salary*: £</label>
+                        @Html.TextBox("Salary", null, new { @id = "Salary", @class="textBox" })
+                        <label class="lableTimes">Per</label>
+                        @Html.TextBox("SalaryPeriod", null, new { @id = "SalaryPeriod", @class="textBox" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    
+                    <div>
+                        <div class="labelFreeTextArea">Job Description/ Person specifications*</div>
+                        <br />
+                        <div class="labelFreeTextArea">
+                            @Html.TextArea("OpportunityDescription", null, new { @cols = 70, @rows = 10, @class = "freeTextArea" })
+                            <br />
+                        </div>
+                    </div>
+                    <div>
+                        <div class="labelFreeTextArea">How would you like applicants to approach you* (e.g. CV, cover letter, application, online. Please include web address/contact details where necessary)</div>
+                        <br />
+                        <div class="labelFreeTextArea">
+                            @Html.TextArea("HowEmployeeApproaches", null, new { @cols = 70, @rows = 10, @class = "freeTextArea" })
+                            <br />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="lableTimes">Closing Date:</label>
+                        @Html.TextBox("ClosingDate", null, new { @id = "ClosingDate", @class="textBox" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div>
+                        <input type="submit" id="btnOrgSubmit" value="Submit" class="btnSubmit" />
+                    </div>
+                }
+            </div>
+
+            <div id="RightColSection">
+                &nbsp;
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+    }
+
+</div>
+

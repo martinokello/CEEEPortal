@@ -1,0 +1,48 @@
+﻿@model CEEEPortal.Models.LoginModel
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('li.employerSubMenuListItem').hover(function () {
+            $(this).css('background-color', '#E6E7E8');
+        }, function () {
+            $(this).css('background-color', 'white');
+        });
+        $('li.employerSubMenuListItem').click(function () {
+            var link = $(this).children(':first').attr('href');
+            document.location.href = link;
+        });
+
+
+    });
+</script>
+@using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }))
+{
+    @Html.AntiForgeryToken() 
+    <div id="midSection" style="clear:both;background-image: url('@Url.Content("~/Images/home-banner.png")'); width: 980px;height:263px;">
+         <a href="/Employer/OrganisationRegForm"><img src="/Images/homepage/register.png" style="position:absolute;margin-top:73px; margin-left:209px;"/></a>
+
+               @Html.Partial("_PartialLogin")
+        @section TwoColumnSection
+        {
+            <div class="main-content-wrapper">
+                <div class="grayBackground">
+                    <div class="index-section-images">
+                        <a href="/Employer/LoadOpportunities"><img src="/Images/Employer/RegisterOpportunity.png"/></a>
+                    </div>                    
+                    <div class="index-section-images">
+                        <a href="/Employer/UpdateJobDetails"><img src="/Images/Employer/ReviewPreviousOpps.png"/></a>
+                    </div>                    
+                    <div class="index-section-images">
+                        <a href="/Employer/UpdateOrganisationDetails"><img src="/Images/Employer/UpdateYourDetails.png"/></a>
+                    </div>
+                <div style="clear: both;"></div>
+                </div>
+            </div>
+        }
+    </div>
+      
+}
+

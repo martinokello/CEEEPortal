@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - My ASP.NET MVC Application</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width" />
+    <link href="@Url.Content("~/Content/EmployerPortal.css")" rel="stylesheet" type="text/css" />
+    @Styles.Render("~/Content/css")
+    <script type="text/javascript" src="@Url.Content("~/jquery/development-bundle/jquery-1.7.1.js")"></script>
+    <script src="@Url.Content("~/jquery/ui/jquery-ui.js")"></script>
+     <link rel="stylesheet" href="@Url.Content("~/jquery/ui/css/jquery-ui.css")" />
+    <script type="text/javascript" src="@Url.Content("~/scripts/jquery.validate.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/scripts/jquery.validate.unobtrusive.js")"></script>
+    <style type="text/css">
+        #mainnav ul li a {
+            padding: 13px 12px 7px;
+        }
+    </style>
+    <!--[if IE]>
+        <style  type="text/css">
+        #mainnav ul li a {
+        padding: 13px 12px 8px;
+        }
+        </style>
+    <![endif]-->
+    <script type="text/javascript">
+        function SetMenuHighLight(selectedMenu)
+        {
+            var $currentLi = null;
+            $('ul#mainlist li a').each(function () {
+                $currentLi = $(this);
+                if ($currentLi.prop('id') == selectedMenu) {
+                    $currentLi.css('background-color', '#EAEAEC');
+                    $currentLi.css('color', 'black');
+                }
+            });
+        }
+        
+        $(document).ready(function() {
+            //Menu highlighting:
+            var selectedMenu = '@ViewBag.MenuSelected';
+
+            SetMenuHighLight(selectedMenu);
+            $('a#Employers').hover(function() {
+                $('ul#subEmployerFunction').css('display', 'block');
+            }, function () {
+                $('ul#subEmployerFunction').css('display', 'none');
+            });
+            $('ul#subEmployerFunction').hover(function () {
+                $('ul#subEmployerFunction').css('display', 'block');
+            }, function () {
+                $('ul#subEmployerFunction').css('display', 'none');
+            });
+            $('ul#subEmployerFunction li a').hover(function () {
+                $(this).css('background-color', 'white');
+                $('a#Employers').css('background-color', '#E6E7E8;');
+            }, function () {
+                $(this).css('background-color', '#E6E7E8;');
+                $('a#Employers').css('background-color', '#0D5A99');
+                $('a#Employers').css('color', 'white');
+            });
+        });        
+ 
+    </script>
+</head>
+<body>
+    <div class="content-wrapper">
+        <div class="inner-content-wrapper">
+            <header>
+                <div class="wrapper">
+                    <div class="universityLogo">
+                        <div style="display: inline-block;">
+                            <img src="@Url.Content("~/Images/logo.png")"/>
+                        </div>
+                        <div id="CEEELogo">
+                            <div style="float: left;">@Html.Label("ConnectedStatus", "Connected.")</div>
+                            <div style="float: left;margin-left:17px;">
+                                <img src="@Url.Content("~/Images/ceelogo.png")" alt="CEEELogo"/>
+                            </div>
+                            <div style="clear: both;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="width: 81px; float: left; height: 40px;">
+                            <a id="homeLink" style="color: #034471; font-weight: bold;" href="/Home/Index">
+                                <img id="menuHomeButton" border="0" style="border-width: 0px;" alt="Home" src="@Url.Content("~/Images/home-btn.png")">
+                            </a>
+                        </div>
+                        <div id="mainnav">
+                            <ul id="mainlist">
+                                <li>
+                                    <a href="#" id="About">About</a>
+                                    <ul></ul>
+                                </li>
+                                <li>
+                                    <a href="#" id="Volunteering">Volunteering</a>
+                                    <ul></ul>
+                                </li>
+                                <li>
+                                    <a href="#" id="Placement">Placements</a>
+                                    <ul></ul>
+                                </li>
+                                <li>
+                                    <a href="/Mentoring/IndexMentoring" id="Mentoring">Mentoring</a>
+                                    <ul></ul>
+                                </li>
+                                <li>
+                                    <a href="/Employer/Index" id="Employers">Employers</a>
+                                    <ul id="subEmployerFunction">
+                                        <li><a href="/Employer/LoadOpportunities">Register an Opportuniy</a></li>
+                                        <li><a href="/Employer/UpdateJobDetails">Update registered opportunities</a></li>
+                                        <li><a href="/Employer/UpdateOrganisationDetails">Update your details</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            @RenderBody()
+            @RenderSection("TwoColumnSection", false)
+            <footer>
+                <div class="content-wrapper">
+                    @{ Html.RenderPartial("Footer"); }
+                </div>
+            </footer>
+
+            @Scripts.Render("~/bundles/jquery")
+            @RenderSection("scripts", required: false)
+        </div>
+    </div>
+</body>
+</html>
