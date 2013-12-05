@@ -2,9 +2,14 @@
 
 @{
     ViewBag.Title = "OrganisationRegForm";
+
+    var hasModel = (Model != null).ToString();
 }
 <script type="text/javascript">
     $(document).ready(function () {
+        if ('@hasModel' == 'True') {
+            $('#Title').val('@(Model == null?"": @Model.Title.ToString())');
+         }
         $.validator.unobtrusive.parse($('#OrgRegForm'));
         $('#AddressLine2').css('display', 'none');
         $('#AddressLine2').change(function () {

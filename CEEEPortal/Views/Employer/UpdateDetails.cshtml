@@ -2,10 +2,14 @@
 @{
     ViewBag.Title = "UpdateDetails";
     Layout = "~/Views/Shared/_Layout.cshtml";
-}
 
+    var hasModel = (Model != null).ToString();
+}
 <script type="text/javascript">
     $(document).ready(function () {
+        if ('@hasModel' == 'True') {
+            $('#Title').val('@(Model == null?"": @Model.Title.ToString())');
+        }
         $.validator.unobtrusive.parse($('#UpdateDetailsForm'));
         $('#AddressLine2').css('display', 'none');
         $('#AddressLine2').change(function () {
@@ -133,7 +137,7 @@
                     </div>
                     <div>
                         @Html.Label("Title*", new { @class = "labelTitle" })
-                        @Html.DropDownList("Title", (IEnumerable<SelectListItem>)ViewBag.Tit, new { @class = "dropDownListTitle" })
+                        @Html.DropDownList("Title", (IList<SelectListItem>)ViewBag.Tit, new { @class = "dropDownListTitle", id="Title" })
                         @Html.Label("First name*", new { @class = "label2" })
                         @Html.TextBox("FirstName", null, new { @class = "textBox" })
                         @Html.Label("Last name*", new { @class = "label2" })

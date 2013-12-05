@@ -394,6 +394,7 @@ namespace CEEEPortal.Controllers
         {
             try
             {
+                if (Session["JobID"] == null) RedirectToAction("LoadOpportunities", "Employer");
                 var jobId = (int)Session["JobID"];
                 var result = CeeePortalBusiness.UpdateGraduateOrStudentJob(model, jobId);
                 if (result)
@@ -417,6 +418,8 @@ namespace CEEEPortal.Controllers
         {
             try
             {
+
+                if (Session["JobID"] == null) RedirectToAction("LoadOpportunities", "Employer");
                 var jobId = (int)Session["JobID"];
                 SetPositionsUI();
                 var result = CeeePortalBusiness.UpdateSandwichOrPlacementJob(model, jobId);
@@ -441,6 +444,7 @@ namespace CEEEPortal.Controllers
         {
             try
             {
+                if (Session["JobID"] == null) RedirectToAction("LoadOpportunities", "Employer");
                 var jobId = (int)Session["JobID"];
                 var result = CeeePortalBusiness.UpdateOnedDayChallengeOrCharityVolunteeringJob(model, jobId);
                 if (result)
@@ -464,6 +468,7 @@ namespace CEEEPortal.Controllers
         {
             try
             {
+                if (Session["JobID"] == null) RedirectToAction("LoadOpportunities", "Employer");
                 var jobId = (int)Session["JobID"];
                 var result = CeeePortalBusiness.UpdatePlacementOrInternationalVolunteeringJob(model, jobId);
                 if (result)

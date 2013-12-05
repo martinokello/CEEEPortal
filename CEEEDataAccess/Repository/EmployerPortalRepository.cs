@@ -1079,7 +1079,7 @@ namespace CEEEDataAccess.Repository
                 job.JobTitle = volunteeringPlacementJob.RoleTitle;
 
                 jobDescription.IsVolunteering = true;
-                jobDescription.JobDescription = volunteeringPlacementJob.TrainingDetails;
+                jobDescription.JobDescription = volunteeringPlacementJob.SkillsRequired;
                 jobDescription.JobTypeID = 4;
 
                 placementInternationalVol.OrganisationType = volunteeringPlacementJob.OrganisationType;
@@ -1265,7 +1265,7 @@ namespace CEEEDataAccess.Repository
                     job.JobTitle = volunteeringPlacementJob.RoleTitle;
 
                     jobDescription.IsVolunteering = true;
-                    jobDescription.JobDescription = volunteeringPlacementJob.TrainingDetails;
+                    jobDescription.JobDescription = volunteeringPlacementJob.SkillsRequired;
 
                     placementInternationalVol.ApplicationMethod = volunteeringPlacementJob.ApplicationMethodCoverLetter + "," +
                                                                   volunteeringPlacementJob.ApplicationMethodCv + "," +
