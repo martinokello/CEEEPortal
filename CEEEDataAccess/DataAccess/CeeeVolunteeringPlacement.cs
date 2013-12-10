@@ -40,8 +40,11 @@ namespace CEEEDataAccess.DataAccess
         public string AlternateEmail { get; set; }
         public string OrganisationType { get; set; }
         public string AboutOrganisation { get; set; }
+        public string EmailReceipt { get; set; }
+        public string WebSiteReceipt { get; set; }
     
-        public virtual CeeeVolunteeringType CeeeVolunteeringType { get; set; }
         public virtual ICollection<CeeeJobDescription> CeeeJobDescriptions { get; set; }
+        public virtual CeeeVolunteeringType CeeeVolunteeringType { get; set; }
     }
 }
+
