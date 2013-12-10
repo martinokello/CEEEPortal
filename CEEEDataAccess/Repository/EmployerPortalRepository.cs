@@ -196,7 +196,33 @@ namespace CEEEDataAccess.Repository
 
                     var location = client.Location;
 
-                    location.Code = orgDetails.Address.PostCode;
+                    var locationExist = dbContext.Locations.SingleOrDefault(p => p.Code == orgDetails.Address.PostCode);
+
+                    var obj = new CEEEDataAccess.DataAccess.Object();
+                    var user = new CEEEDataAccess.DataAccess.User();
+
+                    if (locationExist == null)
+                    {
+                        location.Code = orgDetails.Address.PostCode;
+                        user.LoginName = (ceeeUser.FirstName + ceeeUser.LastName + Guid.NewGuid()).Substring(0, 20);
+                        user.Inactive = "N";
+                        user.SecurityOption = "N";
+                        user.CreatedOn = DateTime.Now;
+                        user.CreatedUserId = 1;
+                        obj.ObjectTypeId = 2; //client = 2;
+                        obj.Client = client;
+                        obj.FileAs = "Not File";
+                        obj.CreatedOn = DateTime.Now;
+                        obj.CreatedUserId = 1;
+                        location.Objects.Add(obj);
+                        client.Location = location;
+                    }
+                    else
+                    {
+                        client.Location = locationExist;
+                        obj.Location = locationExist;
+                    }
+
                     location.Description = orgDetails.Address.AddressLine1 + "," + orgDetails.Address.AddressLine2 + "," +
                                            orgDetails.Address.City + "," +
                                            orgDetails.Address.Country;
