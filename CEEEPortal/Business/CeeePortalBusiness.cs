@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -227,16 +227,19 @@ namespace CEEEPortal.Business
             var files = sandwichPlacementJob.FileUploads;
             var filesInBytes = new List<byte[]>();
             var fileNames = new List<string>();
-
+            if(files != null)
             foreach (var file in files)
             {
-                fileNames.Add(file.FileName);
-                var stream = file.InputStream;
-                var bytes = new byte[stream.Length];
+                if (file != null)
+                {
+                    fileNames.Add(file.FileName);
+                    var stream = file.InputStream;
+                    var bytes = new byte[stream.Length];
 
-                stream.Read(bytes, 0, bytes.Length);
+                    stream.Read(bytes, 0, bytes.Length);
 
-                filesInBytes.Add(bytes);
+                    filesInBytes.Add(bytes);
+                }
             }
             job.FileUploads = filesInBytes;
             job.Filenames = fileNames;
@@ -267,15 +270,19 @@ namespace CEEEPortal.Business
             var filesInBytes = new List<byte[]>();
             var fileNames = new List<string>();
 
+            if (files != null)
             foreach (var file in files)
             {
-                fileNames.Add(file.FileName);
-                var stream = file.InputStream;
-                var bytes = new byte[stream.Length];
+                if (file != null)
+                {
+                    fileNames.Add(file.FileName);
+                    var stream = file.InputStream;
+                    var bytes = new byte[stream.Length];
 
-                stream.Read(bytes, 0, bytes.Length);
+                    stream.Read(bytes, 0, bytes.Length);
 
-                filesInBytes.Add(bytes);
+                    filesInBytes.Add(bytes);
+                }
             }
             job.FileUploads = filesInBytes;
             job.Filenames = fileNames;
@@ -459,6 +466,7 @@ namespace CEEEPortal.Business
             job.DayTimeRequired = placementInternationalJob.DayTimeRequired;
             job.DurationNeeded = placementInternationalJob.DurationNeeded;
             job.EmailReceipt = placementInternationalJob.EmailReceipt;
+            job.WebSiteReciept = placementInternationalJob.WebSiteReciept;
             job.HasInsuranceLiability = placementInternationalJob.HasInsuranceLiability;
             job.HasNoInsuranceLiability = placementInternationalJob.HasNoInsuranceLiability;
             job.HasNotCarriedOutRiskAssesment = placementInternationalJob.HasNotCarriedOutRiskAssesment;
@@ -499,7 +507,6 @@ namespace CEEEPortal.Business
             job.RoleTitle = placementInternationalJob.RoleTitle;
             job.SkillsRequired = placementInternationalJob.SkillsRequired;
             job.TrainingDetails = placementInternationalJob.TrainingDetails;
-            job.WebSiteReciept = placementInternationalJob.WebSiteReciept;
 
             if (placementInternationalJob.ApplicationFormFile != null)
             {
@@ -527,7 +534,6 @@ namespace CEEEPortal.Business
             var job = new PlacementsInternationalVolunteerTO();
             job.AboutOrganisation = placementInternationalJob.AboutOrganisation;
             job.AlternateEmail = placementInternationalJob.AlternateEmail;
-            //job.ApplicationFormFile = placementInternationalJob.ApplicationFormFile;
             job.ApplicationMethodCoverLetter = placementInternationalJob.ApplicationMethodCoverLetter;
             job.ApplicationMethodCv = placementInternationalJob.ApplicationMethodCv;
             job.ApplicationMethodForm = placementInternationalJob.ApplicationMethodForm;
@@ -538,6 +544,7 @@ namespace CEEEPortal.Business
             job.DayTimeRequired = placementInternationalJob.DayTimeRequired;
             job.DurationNeeded = placementInternationalJob.DurationNeeded;
             job.EmailReceipt = placementInternationalJob.EmailReceipt;
+            job.WebSiteReciept = placementInternationalJob.WebSiteReciept;
             job.HasCarriedOutRiskAssesment = placementInternationalJob.HasCarriedOutRiskAssesment;
             job.HasInsuranceLiability = placementInternationalJob.HasInsuranceLiability;
             job.HasNoInsuranceLiability = placementInternationalJob.HasNoInsuranceLiability;
@@ -580,7 +587,6 @@ namespace CEEEPortal.Business
             job.RoleTitle = placementInternationalJob.RoleTitle;
             job.SkillsRequired = placementInternationalJob.SkillsRequired;
             job.TrainingDetails = placementInternationalJob.TrainingDetails;
-            job.WebSiteReciept = placementInternationalJob.WebSiteReciept;
             if (placementInternationalJob.ApplicationFormFile != null)
             {
                 var bytesApplicationFile = new byte[placementInternationalJob.ApplicationFormFile.ContentLength];
@@ -717,7 +723,6 @@ namespace CEEEPortal.Business
             placementViewModel.ContactName = result.ContactName;
             placementViewModel.DayTimeRequired = result.DayTimeRequired;
             placementViewModel.DurationNeeded = result.DurationNeeded;
-            placementViewModel.EmailReceipt = result.EmailReceipt;
             placementViewModel.HasCarriedOutRiskAssesment = result.HasCarriedOutRiskAssesment;
             placementViewModel.HasInsuranceLiability = result.HasInsuranceLiability;
             placementViewModel.HasNotCarriedOutRiskAssesment = result.HasCarriedOutRiskAssesment;
@@ -749,9 +754,11 @@ namespace CEEEPortal.Business
             placementViewModel.RoleTitle = result.RoleTitle;
             placementViewModel.SkillsRequired = result.SkillsRequired;
             placementViewModel.TrainingDetails = result.TrainingDetails;
+            placementViewModel.EmailReceipt = result.EmailReceipt;
             placementViewModel.WebSiteReciept = result.WebSiteReciept;
 
             return placementViewModel;
         }
     }
 }
+
