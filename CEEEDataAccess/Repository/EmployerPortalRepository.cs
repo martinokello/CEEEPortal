@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity.Validation;
@@ -54,7 +54,8 @@ namespace CEEEDataAccess.Repository
                     ceeeUser.FirstName = orgDetails.FirstName;
                     ceeeUser.LastName = orgDetails.LastName;
                     ceeeUser.Email = orgDetails.Email;
-                    ceeeUser.Phone = orgDetails.MobileNo;
+                    ceeeUser.Phone = orgDetails.LandLineNo;
+                    ceeeUser.Mobile = orgDetails.MobileNo;
                     ceeeUser.HowHeard = orgDetails.HowHeard;
                     ceeeUser.CompanySize = orgDetails.CompanySize;
                     ceeeUser.JobTitle = orgDetails.JobTitle;
@@ -119,6 +120,7 @@ namespace CEEEDataAccess.Repository
                     if (locationExist == null)
                     {
                         location.Objects.Add(obj);
+                        client.Location = location;
                     }
                     else
                     {
@@ -159,9 +161,11 @@ namespace CEEEDataAccess.Repository
                     ceeeUser.FirstName = orgDetails.FirstName;
                     ceeeUser.LastName = orgDetails.LastName;
                     ceeeUser.Email = orgDetails.Email;
-                    ceeeUser.Phone = orgDetails.MobileNo;
+                    ceeeUser.Phone = orgDetails.LandLineNo;
+                    ceeeUser.Mobile = orgDetails.MobileNo;
                     ceeeUser.HowHeard = orgDetails.HowHeard;
                     ceeeUser.CompanySize = orgDetails.CompanySize;
+                    ceeeUser.Title = orgDetails.Title.ToString();
                     var ceeeClientAttributes = ceeeUser.CeeeClientAttribute;
                     if (ceeeClientAttributes == null) ceeeClientAttributes = new CeeeClientAttribute();
                     ceeeUser.CeeeOpportunityTypes = new Collection<CeeeOpportunityType>();
@@ -349,7 +353,6 @@ namespace CEEEDataAccess.Repository
                     job.JobRefNo = ("J0" + client.ClientID + Guid.NewGuid().ToString()).Substring(0, 10);
                     job.Published = "N";
                     job.Archived = "N";
-                    job.CreatedOn = DateTime.Now;
                     job.UpdatedOn = DateTime.Now;
                     job.StatusDate = DateTime.Now;
                     job.NoOfPlaces = graduateOrStudentJob.NumberOfOpportunities;
@@ -521,7 +524,6 @@ namespace CEEEDataAccess.Repository
                     job.JobRefNo = ("J0" + client.ClientID + Guid.NewGuid().ToString()).Substring(0, 10);
                     job.Published = "N";
                     job.Archived = "N";
-                    job.CreatedOn = DateTime.Now;
                     job.UpdatedOn = DateTime.Now;
                     job.StatusDate = DateTime.Now;
                     job.NoOfPlaces = sandwichPlacementJob.NumberOfPositions;
@@ -806,7 +808,6 @@ namespace CEEEDataAccess.Repository
                                 oneDayChallengeCharityJob.FinishingTime;
                     job.Published = "N";
                     job.Archived = "N";
-                    job.CreatedOn = DateTime.Now;
                     job.UpdatedOn = DateTime.Now;
                     job.StatusDate = DateTime.Now;
                     job.JobTitle = oneDayChallengeCharityJob.ProjectEventTitle;
@@ -909,6 +910,8 @@ namespace CEEEDataAccess.Repository
                 volunteeringPlacementJob.HasNotCarriedOutRiskAssesment = (!placementInternationalVol.HasCarriedOutRiskAssesment).ToString();
                 volunteeringPlacementJob.HasNoInsuranceLiability = (!placementInternationalVol.HasLiabilityInsurance).ToString();
 
+                volunteeringPlacementJob.WebSiteReciept = placementInternationalVol.WebSiteReceipt;
+                volunteeringPlacementJob.EmailReceipt = placementInternationalVol.EmailReceipt;
                 volunteeringPlacementJob.Location = placementInternationalVol.Location;
                 volunteeringPlacementJob.DurationNeeded = placementInternationalVol.DurationNeeded;
                 var HowToPost = !string.IsNullOrEmpty(placementInternationalVol.HowToPostApplication) ? placementInternationalVol.HowToPostApplication.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries) : new string[] { "" };
@@ -1090,6 +1093,8 @@ namespace CEEEDataAccess.Repository
                 placementInternationalVol.HasLiabilityInsurance =
                     !string.IsNullOrEmpty(volunteeringPlacementJob.HasInsuranceLiability) ? true : false;
 
+                placementInternationalVol.WebSiteReceipt = volunteeringPlacementJob.WebSiteReciept;
+                placementInternationalVol.EmailReceipt = volunteeringPlacementJob.EmailReceipt;
                 placementInternationalVol.Location = volunteeringPlacementJob.Location;
                 placementInternationalVol.DurationNeeded = volunteeringPlacementJob.DurationNeeded;
                 placementInternationalVol.HowToPostApplication = volunteeringPlacementJob.ApplicationReceiveEmail + "," +
@@ -1180,6 +1185,8 @@ namespace CEEEDataAccess.Repository
                     placementInternationalVol.ContactEmail = volunteeringPlacementJob.ContactEmail;
                     placementInternationalVol.AlternateEmail = volunteeringPlacementJob.AlternateEmail;
 
+                    placementInternationalVol.WebSiteReceipt = volunteeringPlacementJob.WebSiteReciept;
+                    placementInternationalVol.EmailReceipt = volunteeringPlacementJob.EmailReceipt;
                     if (client == null)
                     {
                         if (client == null)
@@ -1259,7 +1266,6 @@ namespace CEEEDataAccess.Repository
                     job.JobRefNo = ("J0" + client.ClientID + Guid.NewGuid().ToString()).Substring(0, 10);
                     job.Published = "N";
                     job.Archived = "N";
-                    job.CreatedOn = DateTime.Now;
                     job.UpdatedOn = DateTime.Now;
                     job.StatusDate = DateTime.Now;
                     job.JobTitle = volunteeringPlacementJob.RoleTitle;
@@ -1466,6 +1472,7 @@ namespace CEEEDataAccess.Repository
                 jobDetails = from j in dbContext.Jobs
                              from jd in dbContext.CeeeJobDescriptions
                              where j.JobId == jd.JobID && j.ClientId == clientID
+                             orderby j.CreatedOn descending
                              select new JobUpdateTO
                                  {
                                      JobId = j.JobId,
@@ -1553,6 +1560,7 @@ namespace CEEEDataAccess.Repository
                     clientTO.HowHeard = user.HowHeard;
                     clientTO.JobTitle = user.JobTitle;
                     clientTO.LandLineNo = user.Phone;
+                    clientTO.MobileNo = user.Mobile;
                     clientTO.FirstName = user.FirstName;
                     clientTO.LastName = user.LastName;
                     clientTO.OrganisationDoes = client.Notes;
