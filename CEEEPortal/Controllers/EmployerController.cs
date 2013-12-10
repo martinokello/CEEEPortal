@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
@@ -46,77 +46,54 @@ namespace CEEEPortal.Controllers
         [HttpPost]
         public ActionResult OrganisationRegForm(OrgRegFormViewModel model)
         {
-            var titleSelectedValue = model.Title.ToString();
-            //Set up Title GUI
-            SetUpViewBagWithTitlesUI(model.Title.ToString());
-
-            foreach (var titleItem in (ViewBag.Titles as List<SelectListItem>))
+            if (ModelState.IsValid)
             {
-                if (titleItem.Value.Equals(titleSelectedValue, StringComparison.OrdinalIgnoreCase))
+                if (CeeePortalBusiness.CheckUserNotExists(model.Email))
                 {
-                    titleItem.Selected = true;
-                    break;
-                }
-            }
-
-            //Set up Company Size GUI
-            SetUpViewBagWithCompanySizeUI(model.CompanySize);
-
-            foreach (var companySize in (ViewBag.CompanySize as List<SelectListItem>))
-            {
-                if (companySize.Value.Equals(model.CompanySize, StringComparison.OrdinalIgnoreCase))
-                {
-                    companySize.Selected = true;
-                    break;
-                }
-            }
-
-            //Set up HowHeard GUI
-            SetUpViewBagWithHowHeardUI(model.HowHeard);
-
-            foreach (var howHeard in (ViewBag.HowH as List<SelectListItem>))
-            {
-                if (howHeard.Value.Equals(model.HowHeard, StringComparison.OrdinalIgnoreCase))
-                {
-                    howHeard.Selected = true;
-                    break;
-                }
-            }
-            if (CeeePortalBusiness.CheckUserNotExists(model.Email))
-            {
-
-                if (model.OpportunityType == null)
-                {
-                    model.OpportunityType = new OpportunityType();
-                }
+                    SetOrgRegViewProperties(model);
+                    if (model.OpportunityType == null)
+                    {
+                        model.OpportunityType = new OpportunityType();
+                    }
 
 
-                var mailMessage = new MailMessage();
-                var physicalPath = Server.MapPath("~/MailTemplate/" + ConfigurationManager.AppSettings["TemplateName"]);
+                    var mailMessage = new MailMessage();
+                    var physicalPath =
+                        Server.MapPath("~/MailTemplate/" + ConfigurationManager.AppSettings["TemplateName"]);
 
 
-                mailMessage.Body = mailTemplateService.LoadTemplateByName(physicalPath);
-                mailMessage.From = new MailAddress("info@uwl.ac.uk");
-                mailMessage.To.Add(new MailAddress("employment.services@uwl.ac.uk"));
-                mailMessage.Subject = string.Format("New Employer {0} has registered for Employee prospects", model.OrganisationName);
-                //mailService.SendMail(mailMessage);
-                model.UserId = Register(new RegisterModel { Password = model.Password, UserName = model.Email });
+                    mailMessage.Body = mailTemplateService.LoadTemplateByName(physicalPath);
+                    mailMessage.From = new MailAddress("info@uwl.ac.uk");
+                    mailMessage.To.Add(new MailAddress("employment.services@uwl.ac.uk"));
+                    mailMessage.Subject = string.Format("New Employer {0} has registered for Employee prospects",
+                                                        model.OrganisationName);
+                    //mailService.SendMail(mailMessage);
+                    model.UserId = Register(new RegisterModel { Password = model.Password, UserName = model.Email });
 
-                var actionResult = CeeePortalBusiness.SaveClientDetails(model);
-                if (actionResult)
-                {
-                    //return RedirectToAction("Register", "Account", new RegisterModel {UserName = model.Email, Password = model.Password});
-                    return View("SuccessView");
+                    var actionResult = CeeePortalBusiness.SaveClientDetails(model);
+                    if (actionResult)
+                    {
+                        //return RedirectToAction("Register", "Account", new RegisterModel {UserName = model.Email, Password = model.Password});
+                        return View("SuccessView");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Error",
+                                                 "An unknown problem occured, and Data not saved, please contact your system Administrator.");
+                        return View("OrganisationRegForm", model);
+                    }
                 }
                 else
                 {
-                    ModelState.AddModelError("Error", "An unknown problem occured, and Data not saved, please contact your system Administrator.");
+
+                    SetOrgRegViewProperties(model);
+                    ModelState.AddModelError("UserExists", "User with that email exists. Please register another user.");
                     return View("OrganisationRegForm", model);
                 }
             }
             else
             {
-                ModelState.AddModelError("UserExists", "User with that email exists. Please register another user.");
+                SetOrgRegViewProperties(model);
                 return View("OrganisationRegForm", model);
             }
         }
@@ -219,7 +196,12 @@ namespace CEEEPortal.Controllers
             updateModel.Title = model.Title;
             updateModel.JobTitle = model.JobTitle;
             updateModel.HowHeard = model.HowHeard;
+            SetOrgRegViewProperties(model);
+            return View("UpdateDetails", updateModel);
+        }
 
+        private void SetOrgRegViewProperties(OrgRegFormViewModel model)
+        {
             var titleSelectedValue = model.Title.ToString();
             if (model.OpportunityType == null)
             {
@@ -260,12 +242,52 @@ namespace CEEEPortal.Controllers
                     break;
                 }
             }
-            return View("UpdateDetails", updateModel);
         }
-
         [HttpPost]
         [Authorize]
         public ActionResult UpdateOrganisationDetails(UpdateDetailsViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                SetOrgUpdateViewModelProperties(model);
+
+                var client =
+                    CeeePortalBusiness.GetClientDetailsByID(CeeePortalBusiness.GetClientIdByName(User.Identity.Name));
+                model.UserId = CeeePortalBusiness.GetUserIdByUsername(User.Identity.Name);
+                var actionResult = CeeePortalBusiness.UpdateClientDetails(model);
+
+                if (actionResult)
+                {
+                    WebSecurity.ChangePassword(User.Identity.Name, model.OldPassword, model.NewPassword);
+                    var mailMessage = new MailMessage();
+                    var physicalPath =
+                        Server.MapPath("~/MailTemplate/" + ConfigurationManager.AppSettings["TemplateName"]);
+
+
+                    mailMessage.Body = mailTemplateService.LoadTemplateByName(physicalPath);
+                    mailMessage.From = new MailAddress("info@uwl.ac.uk");
+                    mailMessage.To.Add(new MailAddress("employment.services@uwl.ac.uk"));
+                    mailMessage.Subject = string.Format("New Employer {0} has registered for Employee prospects",
+                                                        model.OrganisationName);
+                    //mailService.SendMail(mailMessage);
+                    return View("SuccessView");
+                }
+                else
+                {
+                    ModelState.AddModelError("Error",
+                                             "An unknown problem occured, and Data not saved, please contact your system Administrator.");
+
+                    return View("UpdateDetails", model);
+                }
+            }
+            else
+            {
+                SetOrgUpdateViewModelProperties(model);
+                return View("UpdateDetails", model);
+            }
+        }
+
+        private void SetOrgUpdateViewModelProperties(UpdateDetailsViewModel model)
         {
             var titleSelectedValue = model.Title.ToString();
             if (model.OpportunityType == null)
@@ -307,31 +329,6 @@ namespace CEEEPortal.Controllers
                     break;
                 }
             }
-
-            var client = CeeePortalBusiness.GetClientDetailsByID(CeeePortalBusiness.GetClientIdByName(User.Identity.Name));
-            model.UserId = CeeePortalBusiness.GetUserIdByUsername(User.Identity.Name);
-            var actionResult = CeeePortalBusiness.UpdateClientDetails(model);
-
-            if (actionResult)
-            {
-                WebSecurity.ChangePassword(User.Identity.Name, model.OldPassword, model.NewPassword);
-                var mailMessage = new MailMessage();
-                var physicalPath = Server.MapPath("~/MailTemplate/" + ConfigurationManager.AppSettings["TemplateName"]);
-
-
-                mailMessage.Body = mailTemplateService.LoadTemplateByName(physicalPath);
-                mailMessage.From = new MailAddress("info@uwl.ac.uk");
-                mailMessage.To.Add(new MailAddress("employment.services@uwl.ac.uk"));
-                mailMessage.Subject = string.Format("New Employer {0} has registered for Employee prospects", model.OrganisationName);
-                //mailService.SendMail(mailMessage);
-                return View("SuccessView");
-            }
-            else
-            {
-                ModelState.AddModelError("Error", "An unknown problem occured, and Data not saved, please contact your system Administrator.");
-
-                return View("UpdateDetails", model);
-            }
         }
 
         [HttpGet]
@@ -351,7 +348,7 @@ namespace CEEEPortal.Controllers
                     var sandModel = CeeePortalBusiness.GetSandwichOrPlacementJob(jobId);
                     //Fill model
                     return View("SandwichPlacementsInternshipsUpdate", sandModel);
-                case JobTypeview.OnedDayChallengeOrCharityVolunteeringJob: 
+                case JobTypeview.OnedDayChallengeOrCharityVolunteeringJob:
                     var oneDayModel = CeeePortalBusiness.GetOnedDayChallengeOrCharityVolunteeringJob(jobId);
                     SetOpportunityCategoryUI();
                     SetOpportunityTypeUI(oneDayModel.OpportunityType.ToString());
@@ -363,12 +360,12 @@ namespace CEEEPortal.Controllers
                     return View("FullViewOneDayChallengeUpdate", oneDayModel);
                 case JobTypeview.PlacementOrInternationalVolunteeringJob: SetOpportunityCategoryUI();
 
-                    var placeModel = CeeePortalBusiness.GetPlacementOrInternationalVolunteeringJob(jobId);                   
-                    
+                    var placeModel = CeeePortalBusiness.GetPlacementOrInternationalVolunteeringJob(jobId);
+
                     SetDurationMethodUI(placeModel.DurationNeeded);
                     SetOrganisationTypeUI(placeModel.OrganisationType);
                     SetOpportunityTypeUI(placeModel.OpportunityType.ToString());
-                    
+
                     //Specialise:
                     SetApplicationMethodUI();
                     SetMethodReceiveApplicationUI();
@@ -392,49 +389,62 @@ namespace CEEEPortal.Controllers
         [Authorize]
         public ActionResult UpdateGraduateStudentJob(GraduateEmployerModel model)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (Session["JobID"] == null) RedirectToAction("LoadOpportunities", "Employer");
-                var jobId = (int)Session["JobID"];
-                var result = CeeePortalBusiness.UpdateGraduateOrStudentJob(model, jobId);
-                if (result)
+
+                try
                 {
-                    return View("SuccessView");
+                    if (Session["JobID"] == null) return RedirectToAction("LoadOpportunities", "Employer");
+                    var jobId = (int)Session["JobID"];
+                    var result = CeeePortalBusiness.UpdateGraduateOrStudentJob(model, jobId);
+                    if (result)
+                    {
+                        return View("SuccessView");
+                    }
+                    else
+                    {
+                        return View("Error");
+                    }
                 }
-                else
+                catch (Exception e)
                 {
                     return View("Error");
                 }
             }
-            catch (Exception e)
-            {
-                return View("Error");
-            }
+            else return View("StudentOrGraduateJobsFormUpdate", model);
         }
 
         [HttpPost]
         [Authorize]
         public ActionResult UpdateSandwichPlacementJob(SandwichPlacementViewModel model)
         {
-            try
+            if (ModelState.IsValid)
             {
-
-                if (Session["JobID"] == null) RedirectToAction("LoadOpportunities", "Employer");
-                var jobId = (int)Session["JobID"];
-                SetPositionsUI();
-                var result = CeeePortalBusiness.UpdateSandwichOrPlacementJob(model, jobId);
-                if (result)
+                try
                 {
-                    return View("SuccessView");
+
+                    if (Session["JobID"] == null) return RedirectToAction("LoadOpportunities", "Employer");
+                    var jobId = (int)Session["JobID"];
+                    SetPositionsUI();
+                    var result = CeeePortalBusiness.UpdateSandwichOrPlacementJob(model, jobId);
+                    if (result)
+                    {
+                        return View("SuccessView");
+                    }
+                    else
+                    {
+                        return View("Error");
+                    }
                 }
-                else
+                catch (Exception e)
                 {
                     return View("Error");
                 }
             }
-            catch (Exception e)
+            else
             {
-                return View("Error");
+                return View("SandwichPlacementsInternshipsUpdate", model);
+
             }
         }
 
@@ -442,48 +452,56 @@ namespace CEEEPortal.Controllers
         [Authorize]
         public ActionResult UpdateOneDayGroupChallengeJob(OneDayChallengeCharityVolunteerViewModel model)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (Session["JobID"] == null) RedirectToAction("LoadOpportunities", "Employer");
-                var jobId = (int)Session["JobID"];
-                var result = CeeePortalBusiness.UpdateOnedDayChallengeOrCharityVolunteeringJob(model, jobId);
-                if (result)
+                try
                 {
-                    return View("SuccessView");
+                    if (Session["JobID"] == null) return RedirectToAction("LoadOpportunities", "Employer");
+                    var jobId = (int)Session["JobID"];
+                    var result = CeeePortalBusiness.UpdateOnedDayChallengeOrCharityVolunteeringJob(model, jobId);
+                    if (result)
+                    {
+                        return View("SuccessView");
+                    }
+                    else
+                    {
+                        return View("Error");
+                    }
                 }
-                else
+                catch (Exception e)
                 {
                     return View("Error");
                 }
             }
-            catch (Exception e)
-            {
-                return View("Error");
-            }
+            else return View("FullViewOneDayChallengeUpdate", model);
         }
 
         [HttpPost]
         [Authorize]
         public ActionResult UpdateVolunteeringPlacmentJob(PlacementsInternationalVolunteerViewModel model)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (Session["JobID"] == null) RedirectToAction("LoadOpportunities", "Employer");
-                var jobId = (int)Session["JobID"];
-                var result = CeeePortalBusiness.UpdatePlacementOrInternationalVolunteeringJob(model, jobId);
-                if (result)
+                try
                 {
-                    return View("SuccessView");
+                    if (Session["JobID"] == null) return RedirectToAction("LoadOpportunities", "Employer");
+                    var jobId = (int)Session["JobID"];
+                    var result = CeeePortalBusiness.UpdatePlacementOrInternationalVolunteeringJob(model, jobId);
+                    if (result)
+                    {
+                        return View("SuccessView");
+                    }
+                    else
+                    {
+                        return View("Error");
+                    }
                 }
-                else
+                catch (Exception e)
                 {
                     return View("Error");
                 }
             }
-            catch (Exception e)
-            {
-                return View("Error");
-            }
+            else return View("FullVolunteerPlacementUpdate", model);
         }
 
         [HttpGet]
@@ -523,62 +541,69 @@ namespace CEEEPortal.Controllers
         [Authorize]
         public ActionResult StudentOrGraduateJobsForm(GraduateEmployerModel model)
         {
-            if (Session["id"] == null)
+            if (ModelState.IsValid)
             {
-                Response.Redirect("/Employer/LoadOpportunities");
-            }
-            var contractType = model.ContractType;
-            var jobType = model.JobType;
-            var clientID = CeeePortalBusiness.GetClientIdByName(User.Identity.Name);
-
-            var employmentStudentType = model.EmploymentStudentType = (EmploymentStudentType)((int)Session["id"]);
-
-            if (employmentStudentType == EmploymentStudentType.Graduate)
-            {
-                ViewBag.EmploymentType = "Graduate Opportunity";
-                var actionResult = CeeePortalBusiness.SaveGraduateOrStudentJob(model, clientID);
-                if (actionResult)
+                if (Session["id"] == null)
                 {
-                    return View("SuccessView");
+                    Response.Redirect("/Employer/LoadOpportunities");
+                }
+                var contractType = model.ContractType;
+                var jobType = model.JobType;
+                var clientID = CeeePortalBusiness.GetClientIdByName(User.Identity.Name);
+
+                var employmentStudentType = model.EmploymentStudentType = (EmploymentStudentType)((int)Session["id"]);
+
+                if (employmentStudentType == EmploymentStudentType.Graduate)
+                {
+                    ViewBag.EmploymentType = "Graduate Opportunity";
+                    var actionResult = CeeePortalBusiness.SaveGraduateOrStudentJob(model, clientID);
+                    if (actionResult)
+                    {
+                        return View("SuccessView");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Error",
+                                                 "An unknown problem occured, and Data not saved, please contact your system Administrator.");
+                    }
                 }
                 else
                 {
-                    ModelState.AddModelError("Error", "An unknown problem occured, and Data not saved, please contact your system Administrator.");
+                    ViewBag.EmploymentType = "Student Opportunity";
+                    var actionResult = CeeePortalBusiness.SaveGraduateOrStudentJob(model, clientID);
+                    if (actionResult)
+                    {
+                        //Notify Employment Services by email
+                        var mailMessage = new MailMessage();
+                        var physicalPath =
+                            Server.MapPath("~/MailTemplates/" + ConfigurationManager.AppSettings["TemplateName"]);
+
+
+                        mailMessage.Body = mailTemplateService.LoadTemplateByName(physicalPath);
+                        mailMessage.From = new MailAddress("info@uwl.ac.uk");
+                        mailMessage.To.Add(new MailAddress("employment.services@uwl.ac.uk"));
+                        mailMessage.To.Add(new MailAddress("martin.okello@uwl.ac.uk"));
+                        mailMessage.Subject = string.Format("New Employer {0} has uploaded new {1}",
+                                                            model.OrganisationName,
+                                                            model.EmploymentStudentType.ToString());
+
+                        try
+                        {
+                            mailService.SendMail(mailMessage);
+                        }
+                        catch (Exception excepion)
+                        {
+
+                        }
+                        return View("SuccessView");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Error",
+                                                 "An unknown problem occured, and Data not saved, please contact your system Administrator.");
+                    }
                 }
             }
-            else
-            {
-                ViewBag.EmploymentType = "Student Opportunity";
-                var actionResult = CeeePortalBusiness.SaveGraduateOrStudentJob(model, clientID);
-                if (actionResult)
-                {
-                    //Notify Employment Services by email
-                    var mailMessage = new MailMessage();
-                    var physicalPath = Server.MapPath("~/MailTemplates/" + ConfigurationManager.AppSettings["TemplateName"]);
-
-
-                    mailMessage.Body = mailTemplateService.LoadTemplateByName(physicalPath);
-                    mailMessage.From = new MailAddress("info@uwl.ac.uk");
-                    mailMessage.To.Add(new MailAddress("employment.services@uwl.ac.uk"));
-                    mailMessage.To.Add(new MailAddress("martin.okello@uwl.ac.uk"));
-                    mailMessage.Subject = string.Format("New Employer {0} has uploaded new {1}", model.OrganisationName, model.EmploymentStudentType.ToString());
-
-                    try
-                    {
-                        mailService.SendMail(mailMessage);
-                    }
-                    catch (Exception excepion)
-                    {
-
-                    }
-                    return View("SuccessView");
-                }
-                else
-                {
-                    ModelState.AddModelError("Error", "An unknown problem occured, and Data not saved, please contact your system Administrator.");
-                }
-            }
-
 
             return View("StudentOrGraduateJobsForm", model);
         }
@@ -631,35 +656,44 @@ namespace CEEEPortal.Controllers
             var clientID = CeeePortalBusiness.GetClientIdByName(User.Identity.Name);
             ViewBag.EmploymentType = "Sandwich, Placements And Internships";
             SetPositionsUI();
-            var actionResult = CeeePortalBusiness.SaveSandwichOrPlacementJob(model, clientID);
-            if (actionResult)
+            if (ModelState.IsValid)
             {
-                //Notify Employment Services by email
-                var mailMessage = new MailMessage();
-                var physicalPath = Server.MapPath("~/MailTemplates/" + ConfigurationManager.AppSettings["TemplateName"]);
-
-
-                mailMessage.Body = mailTemplateService.LoadTemplateByName(physicalPath);
-                mailMessage.From = new MailAddress("info@uwl.ac.uk");
-                mailMessage.To.Add(new MailAddress("employment.services@uwl.ac.uk"));
-                mailMessage.To.Add(new MailAddress("martin.okello@uwl.ac.uk"));
-                mailMessage.Subject = string.Format("New Employer {0} has uploaded new {1}", CeeePortalBusiness.GetClientDetailsByID(clientID).OrganisationName, "Sandwich Placement Opportunity");
-
-                try
+                var actionResult = CeeePortalBusiness.SaveSandwichOrPlacementJob(model, clientID);
+                if (actionResult)
                 {
-                    mailService.SendMail(mailMessage);
-                }
-                catch (Exception excepion)
-                {
+                    //Notify Employment Services by email
+                    var mailMessage = new MailMessage();
+                    var physicalPath =
+                        Server.MapPath("~/MailTemplates/" + ConfigurationManager.AppSettings["TemplateName"]);
 
+
+                    mailMessage.Body = mailTemplateService.LoadTemplateByName(physicalPath);
+                    mailMessage.From = new MailAddress("info@uwl.ac.uk");
+                    mailMessage.To.Add(new MailAddress("employment.services@uwl.ac.uk"));
+                    mailMessage.To.Add(new MailAddress("martin.okello@uwl.ac.uk"));
+                    mailMessage.Subject = string.Format("New Employer {0} has uploaded new {1}",
+                                                        CeeePortalBusiness.GetClientDetailsByID(clientID)
+                                                                          .OrganisationName,
+                                                        "Sandwich Placement Opportunity");
+
+                    try
+                    {
+                        mailService.SendMail(mailMessage);
+                    }
+                    catch (Exception excepion)
+                    {
+
+                    }
+                    return View("SuccessView");
                 }
-                return View("SuccessView");
+                else
+                {
+                    ModelState.AddModelError("Error",
+                                             "An unknown problem occured, and Data not saved, please contact your system Administrator.");
+                    return View("SandwichPlacementsInternships",model);
+                }
             }
-            else
-            {
-                ModelState.AddModelError("Error", "An unknown problem occured, and Data not saved, please contact your system Administrator.");
-                return View("SandwichPlacementsInternships");
-            }
+            return View("SandwichPlacementsInternships",model);
         }
         [HttpGet]
         [Authorize]
@@ -708,49 +742,68 @@ namespace CEEEPortal.Controllers
         [Authorize]
         public ActionResult VolunteeringPlacement(PlacementsInternationalVolunteerViewModel model)
         {
-            var clientID = CeeePortalBusiness.GetClientIdByName(User.Identity.Name);
-            if (model.OpportunityCategoryType == null)
-            {
-                ModelState.AddModelError("OpportunityCategoryError", "Opportunity Category Type is required.");
-                model.OpportunityCategoryType = new OpportunityCategoryType();
-            }
+            if (model.OpportunityCategoryType == null) model.OpportunityCategoryType = new OpportunityCategoryType();
             SetOpportunityCategoryUI();
+
             SetOrganisationTypeUI(model.OpportunityType.ToString());
             SetOpportunityTypeUI(model.OpportunityType.ToString());
             SetDurationMethodUI(model.DurationNeeded);
 
-            //Specialise:
-            SetApplicationMethodUI();
-            SetMethodReceiveApplicationUI();
-            var actionResult = CeeePortalBusiness.SavePlacementOrInternationalVolunteeringJob(model, clientID);
-
-            if (actionResult)
+            if (ModelState.IsValid)
             {
-                //Notify Employment Services by email
-                var mailMessage = new MailMessage();
-                var physicalPath = Server.MapPath("~/MailTemplates/" + ConfigurationManager.AppSettings["TemplateName"]);
-
-
-                mailMessage.Body = mailTemplateService.LoadTemplateByName(physicalPath);
-                mailMessage.From = new MailAddress("info@uwl.ac.uk");
-                mailMessage.To.Add(new MailAddress("employment.services@uwl.ac.uk"));
-                mailMessage.To.Add(new MailAddress("martin.okello@uwl.ac.uk"));
-                mailMessage.Subject = string.Format("New Employer {0} has uploaded new {1}", CeeePortalBusiness.GetClientDetailsByID(clientID).OrganisationName, "Volunteerring Placement or International Volunteering Placement");
-
-                try
+                var clientID = CeeePortalBusiness.GetClientIdByName(User.Identity.Name);
+                if (model.OpportunityCategoryType == null)
                 {
-                    mailService.SendMail(mailMessage);
+                    ModelState.AddModelError("OpportunityCategoryError", "Opportunity Category Type is required.");
+                    model.OpportunityCategoryType = new OpportunityCategoryType();
                 }
-                catch (Exception excepion)
-                {
 
+
+                //Specialise:
+                SetApplicationMethodUI();
+                SetMethodReceiveApplicationUI();
+                var actionResult = CeeePortalBusiness.SavePlacementOrInternationalVolunteeringJob(model, clientID);
+
+                if (actionResult)
+                {
+                    //Notify Employment Services by email
+                    var mailMessage = new MailMessage();
+                    var physicalPath =
+                        Server.MapPath("~/MailTemplates/" + ConfigurationManager.AppSettings["TemplateName"]);
+
+
+                    mailMessage.Body = mailTemplateService.LoadTemplateByName(physicalPath);
+                    mailMessage.From = new MailAddress("info@uwl.ac.uk");
+                    mailMessage.To.Add(new MailAddress("employment.services@uwl.ac.uk"));
+                    mailMessage.To.Add(new MailAddress("martin.okello@uwl.ac.uk"));
+                    mailMessage.Subject = string.Format("New Employer {0} has uploaded new {1}",
+                                                        CeeePortalBusiness.GetClientDetailsByID(clientID)
+                                                                          .OrganisationName,
+                                                        "Volunteerring Placement or International Volunteering Placement");
+
+                    try
+                    {
+                        mailService.SendMail(mailMessage);
+                    }
+                    catch (Exception excepion)
+                    {
+
+                    }
+                    return View("SuccessView");
                 }
-                return View("SuccessView");
+                else
+                {
+                    ModelState.AddModelError("Error",
+                                             "An unknown problem occured, and Data not saved, please contact your system Administrator.");
+
+                    return View("FullVolunteerPlacement", model);
+                }
             }
             else
             {
-                ModelState.AddModelError("Error", "An unknown problem occured, and Data not saved, please contact your system Administrator.");
-
+                //Specialise:
+                SetApplicationMethodUI();
+                SetMethodReceiveApplicationUI();
                 return View("FullVolunteerPlacement", model);
             }
         }
@@ -765,46 +818,60 @@ namespace CEEEPortal.Controllers
         [Authorize]
         public ActionResult VolunteeringOneDayChallenge(OneDayChallengeCharityVolunteerViewModel model)
         {
-            var clientID = CeeePortalBusiness.GetClientIdByName(User.Identity.Name);
-            if (model.OpportunityCategoryType == null)
-            {
-                ModelState.AddModelError("OpportunityCategoryError", "Opportunity Category Type is required.");
-                model.OpportunityCategoryType = new OpportunityCategoryType();
-            }
-
+            if (model.OpportunityCategoryType == null) model.OpportunityCategoryType = new OpportunityCategoryType();
             SetOpportunityCategoryUI();
             SetOrganisationTypeUI(model.OrganisationType);
             SetOpportunityTypeUI(model.OpportunityType.ToString());
             SetDurationMethodUI();
-            var actionResult = CeeePortalBusiness.SaveOnedDayChallengeOrCharityVolunteeringJob(model, clientID);
 
-            if (actionResult)
+            if (ModelState.IsValid)
             {
-                //Notify Employment Services by email
-                var mailMessage = new MailMessage();
-                var physicalPath = Server.MapPath("~/MailTemplates/" + ConfigurationManager.AppSettings["TemplateName"]);
-
-
-                mailMessage.Body = mailTemplateService.LoadTemplateByName(physicalPath);
-                mailMessage.From = new MailAddress("info@uwl.ac.uk");
-                mailMessage.To.Add(new MailAddress("employment.services@uwl.ac.uk"));
-                mailMessage.To.Add(new MailAddress("martin.okello@uwl.ac.uk"));
-                mailMessage.Subject = string.Format("New Employer {0} has uploaded new {1}", CeeePortalBusiness.GetClientDetailsByID(clientID).OrganisationName, "Volunteerring Placement or International Volunteering Placement");
-
-                try
+                var clientID = CeeePortalBusiness.GetClientIdByName(User.Identity.Name);
+                if (model.OpportunityCategoryType == null)
                 {
-                    mailService.SendMail(mailMessage);
+                    ModelState.AddModelError("OpportunityCategoryError", "Opportunity Category Type is required.");
+                    model.OpportunityCategoryType = new OpportunityCategoryType();
                 }
-                catch (Exception excepion)
-                {
 
+                var actionResult = CeeePortalBusiness.SaveOnedDayChallengeOrCharityVolunteeringJob(model, clientID);
+
+                if (actionResult)
+                {
+                    //Notify Employment Services by email
+                    var mailMessage = new MailMessage();
+                    var physicalPath =
+                        Server.MapPath("~/MailTemplates/" + ConfigurationManager.AppSettings["TemplateName"]);
+
+
+                    mailMessage.Body = mailTemplateService.LoadTemplateByName(physicalPath);
+                    mailMessage.From = new MailAddress("info@uwl.ac.uk");
+                    mailMessage.To.Add(new MailAddress("employment.services@uwl.ac.uk"));
+                    mailMessage.To.Add(new MailAddress("martin.okello@uwl.ac.uk"));
+                    mailMessage.Subject = string.Format("New Employer {0} has uploaded new {1}",
+                                                        CeeePortalBusiness.GetClientDetailsByID(clientID)
+                                                                          .OrganisationName,
+                                                        "Volunteerring Placement or International Volunteering Placement");
+
+                    try
+                    {
+                        mailService.SendMail(mailMessage);
+                    }
+                    catch (Exception excepion)
+                    {
+
+                    }
+                    return View("SuccessView");
                 }
-                return View("SuccessView");
+                else
+                {
+                    ModelState.AddModelError("Error",
+                                             "An unknown problem occured, and Data not saved, please contact your system Administrator.");
+
+                    return View("FullViewOneDayChallenge", model);
+                }
             }
             else
-            {
-                ModelState.AddModelError("Error", "An unknown problem occured, and Data not saved, please contact your system Administrator.");
-
+            { 
                 return View("FullViewOneDayChallenge", model);
             }
         }
@@ -924,7 +991,7 @@ namespace CEEEPortal.Controllers
         {
 
             if (!string.IsNullOrEmpty(selectedValue))
-            ViewBag.MethodReceiveA = new List<SelectListItem>
+                ViewBag.MethodReceiveA = new List<SelectListItem>
                 {
                     new SelectListItem {Selected = false, Text = "<<Choose>>", Value = ""},
                     new SelectListItem {Selected = selectedValue.Equals("Email"), Text = "Voluntary Body", Value = "Email"},
@@ -948,7 +1015,7 @@ namespace CEEEPortal.Controllers
         private void SetOrganisationTypeUI(string selectedValue)
         {
             if (!string.IsNullOrEmpty(selectedValue))
-            ViewBag.OrganisationT = new List<SelectListItem>
+                ViewBag.OrganisationT = new List<SelectListItem>
                 {
                     new SelectListItem {Selected = false, Text = "<<Choose>>", Value = ""},
                     new SelectListItem {Selected = selectedValue.Equals("VoluntaryBody"), Text = "Voluntary Body", Value = "VoluntaryBody"},
@@ -974,7 +1041,7 @@ namespace CEEEPortal.Controllers
         private void SetOpportunityTypeUI(string selectedValue)
         {
             if (!string.IsNullOrEmpty(selectedValue))
-            ViewBag.OpportunityT = new List<SelectListItem>
+                ViewBag.OpportunityT = new List<SelectListItem>
                 {
                     new SelectListItem {Selected = false, Text = "<<Choose>>", Value = ""},
                     new SelectListItem {Selected = selectedValue.Equals(VolunteeringTypes.VolunteerPlacement.ToString()), Text = "Volunteer placement", Value = VolunteeringTypes.VolunteerPlacement.ToString()},
@@ -1025,7 +1092,7 @@ namespace CEEEPortal.Controllers
         private void SetUpViewBagWithTitlesUI(string selectedValue)
         {
             if (!string.IsNullOrEmpty(selectedValue))
-            ViewBag.Tit = new List<SelectListItem>
+                ViewBag.Tit = new List<SelectListItem>
                 {
                     new SelectListItem{Selected = false,Text = "<<Choose>>", Value = ""},
                     new SelectListItem {Selected = selectedValue.Equals("Mr"), Text="Mr", Value="Mr"},
@@ -1051,7 +1118,7 @@ namespace CEEEPortal.Controllers
         private void SetUpViewBagWithCompanySizeUI(string selectedValue)
         {
             if (!string.IsNullOrEmpty(selectedValue))
-            ViewBag.CompanyS = new List<SelectListItem>
+                ViewBag.CompanyS = new List<SelectListItem>
                 {
                     new SelectListItem{Selected = false,Text = "<<Choose>>", Value = ""},
                     new SelectListItem {Selected = selectedValue.Equals("1-10"), Text="1 - 10", Value="1-10"},
@@ -1081,7 +1148,7 @@ namespace CEEEPortal.Controllers
         private void SetUpViewBagWithHowHeardUI(string selectedValue)
         {
             if (!string.IsNullOrEmpty(selectedValue))
-            ViewBag.HowH = new List<SelectListItem>
+                ViewBag.HowH = new List<SelectListItem>
                 {
                     new SelectListItem{Selected = false,Text = "<<Choose>>", Value = ""},
                     new SelectListItem {Selected = selectedValue.Equals("DM"), Text="Direct Marketing", Value="DM"},
@@ -1097,3 +1164,4 @@ namespace CEEEPortal.Controllers
         }
     }
 }
+
