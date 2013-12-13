@@ -170,6 +170,7 @@ namespace CEEEDataAccess.Repository
                     if (ceeeClientAttributes == null) ceeeClientAttributes = new CeeeClientAttribute();
                     ceeeUser.CeeeOpportunityTypes = new Collection<CeeeOpportunityType>();
 
+
                     //Deal with OpportunityTypes:
                     var oppTypes = orgDetails.OpportunityType;
                     var airline = oppTypes.AirLineAndAirport ?? null;
@@ -178,6 +179,8 @@ namespace CEEEDataAccess.Repository
                     var other = oppTypes.Other ?? null;
                     var recruitment = oppTypes.RecruitmentAgency ?? null;
                     var sport = oppTypes.SportAndLeisure ?? null;
+
+                    ceeeUser.JobTitle = orgDetails.JobTitle;
 
                     ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType { OpportunityName = airline });
                     ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType { OpportunityName = education });
@@ -269,17 +272,19 @@ namespace CEEEDataAccess.Repository
                 graduateOrStudentJob.JobTitle = job.JobTitle;
                 graduateOrStudentJob.ContractType = job.EmploymentTypeId == 4
                                                         ? ContractType.Permanent
-                                                        : job.EmploymentTypeId == 5
+                                                        : job.EmploymentTypeId == 11
                                                               ? ContractType.Fixed
                                                               : job.EmploymentTypeId == 9
                                                                     ? ContractType.CasualZeroHour
-                                                                    : ContractType.Other;
+                                                                    : job.EmploymentTypeId == 10?
+                                                                    ContractType.SelfEmployed: ContractType.Other;
 
                 graduateOrStudentJob.HowEmployeeApproaches = jobDescription.HowEmployeeApproaches;
                 graduateOrStudentJob.ClosingDate = jobDescription.ClosingDate;
                 graduateOrStudentJob.Salary = jobDescription.Salary;
                 graduateOrStudentJob.SalaryPeriod = jobDescription.SalaryPeriod;
                 graduateOrStudentJob.OpportunityDescription = jobDescription.JobDescription;
+                graduateOrStudentJob.ContractTypeOther = jobDescription.ContractTypeOther;
             }
 
             return graduateOrStudentJob;
@@ -318,10 +323,11 @@ namespace CEEEDataAccess.Repository
                 job.EmploymentTypeId = graduateOrStudentJob.ContractType == ContractType.Permanent
                                            ? 4
                                            : graduateOrStudentJob.ContractType == ContractType.Fixed
-                                                 ? 5
+                                                 ? 11
                                                  : graduateOrStudentJob.ContractType == ContractType.CasualZeroHour
                                                        ? 9
-                                                       : 10;
+                                                       : graduateOrStudentJob.ContractType == ContractType.SelfEmployed?
+                                                       10:12;
                 jobDescription.EndDate = graduateOrStudentJob.EndDate;
                 jobDescription.IsVolunteering = false;
                 jobDescription.JobTypeID = 1;
@@ -330,6 +336,7 @@ namespace CEEEDataAccess.Repository
                 jobDescription.Salary = graduateOrStudentJob.Salary;
                 jobDescription.SalaryPeriod = graduateOrStudentJob.SalaryPeriod;
                 jobDescription.JobDescription = graduateOrStudentJob.OpportunityDescription;
+                jobDescription.ContractTypeOther = graduateOrStudentJob.ContractTypeOther;
                 using (var dbContext = new ProNetTestEntities())
                 {
                     var jobTypeValue = graduateOrStudentJob.JobType.ToString();
@@ -386,17 +393,18 @@ namespace CEEEDataAccess.Repository
                     job.EmploymentTypeId = graduateOrStudentJob.ContractType == ContractType.Permanent
                                                ? 4
                                                : graduateOrStudentJob.ContractType == ContractType.Fixed
-                                                     ? 5
+                                                     ? 11
                                                      : graduateOrStudentJob.ContractType == ContractType.CasualZeroHour
                                                            ? 9
-                                                           : 10;
+                                                           : graduateOrStudentJob.ContractType == ContractType.SelfEmployed ?
+                                                           10 : 12;
                     jobDescription.IsVolunteering = false;
                     jobDescription.HowEmployeeApproaches = graduateOrStudentJob.HowEmployeeApproaches;
                     jobDescription.ClosingDate = graduateOrStudentJob.ClosingDate;
                     jobDescription.Salary = graduateOrStudentJob.Salary;
                     jobDescription.SalaryPeriod = graduateOrStudentJob.SalaryPeriod;
                     jobDescription.JobDescription = graduateOrStudentJob.OpportunityDescription;
-
+                    jobDescription.ContractTypeOther = graduateOrStudentJob.ContractTypeOther;
                     dbContext.SaveChanges();
                     return true;
                 }
