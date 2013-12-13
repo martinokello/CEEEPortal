@@ -1,0 +1,105 @@
+
+.wrapper {width: 980px;}
+#mainnav {
+    background-color: #005194;
+    float: left;
+    width: 899px;
+    z-index: 2;
+    margin-left: 0px;
+    height: 40px;
+}
+#mainnav ul li {
+    display: block;
+    float: left;
+    position: relative;
+    margin-left: 0px;
+    padding-left: 0px;list-style-position: inside;
+}
+#mainnav ul li a {
+    background: none repeat scroll 0 0 #0D5A99;
+    color: #FFFFFF;
+    display: block;
+    margin-left: 0;
+    text-decoration: none;
+    white-space: nowrap;
+    font-weight: bold;
+}
+#mainnav ul li a:hover {
+    background: none repeat scroll 0 0 #EAEAEC;color: #272425;
+}
+ul#mainlist {
+    background-color: #0D5A99;
+    text-align: left;
+    margin: auto;
+    margin-left: 0px;
+    list-style-type: none;
+}
+#mainlist {
+    margin-left: 0px;
+}
+ul#subEmployerFunction{ display: block;position: relative;width: 238px;clear: left;display: none;z-index: 10000;background-color: orange;}
+ul#subEmployerFunction li {
+    position: relative;
+    margin-left: 0px;
+    padding-left: 0px;
+    list-style: none;
+}
+
+ul#subEmployerFunction li a{padding: 13px 12px 7px;margin-left: -40px;width: 238px;color: black; background-color:#EAEAEC;}
+.wrapper{width: 980px; background-color: #FFFFFF; text-align: left;}
+a#Employers{ width: 238px;}
+.content-wrapper{ width: 100%;text-align: center;}
+.inner-content-wrapper{text-align: left; width: 980px;margin-left: auto;margin-right: auto;background-color:#E6E7E8; }
+.main-content-wrapper{ background-color: #E6E7E8;padding-top: 0px;margin-top: 0px;min-height: 120px;}
+.loginLabel { margin-left:20px;margin-top:20px; background-color:#005FAD;color:white;width:100px;padding: 5px;font-size: small;}
+.LoginText{ margin-left:20px;width: 170px;margin-top: 1px;}
+#loginButton{ background-color: white;color: #0D5A99;margin-left: 20px;width: 56px;height: 42px;padding: 5px;float: left;font-size: smaller;}
+#forgetPassButton{background-color: white;color: #0D5A99;width: 104px;height: 42px;padding: 5px;margin-left: 10px;float: left;font-size: smaller;}
+#forgetPassButton a { text-decoration: none;color: #0D5A99;}
+#midSection{width: 980px; height: 263px; clear: both; background-image: url("/Images/home-banner.png");}
+#MainSection{position: relative; margin-left:20px;*margin-let: 20px;width: 663px;margin-bottom: 10px;min-height: 620px;float: left;background-color: #005194;margin-top: 0px;}
+.grayBackground{position: relative; margin-left:20px;margin-bottom: 10px;min-height: 620px;text-align: center;width: auto;margin-right: 20px;background-color:#E6E7E8;margin-top: 0px;}
+.index-section-images{ width: 30%;margin-left: 20px;float: left;margin-top: 40px;}
+#RightColSection{position: relative;margin-left:15px;margin-bottom: 10px;width: 270px;height: 400px;float: left;background-color: #005194;margin-top: 0px;}
+#CEEELogo{display: inline-block;margin-left:-180px;*margin-left: 165px;margin-top: -35px;*margin-top: -40px;border-color: black;border-style: solid;padding: 5px;border-bottom-color: white;border-width: thin;margin-bottom: -5px;width: 180px;height: 30px;}
+
+/* Registration Form*/
+.dropDownListTitle{ width: 100px;margin: 10px 0 10px 10px;float: left;}
+.dropDownListWide{ width: 200px;margin: 10px 0 10px 10px;float: left;}
+.textBox{ width: 120px;margin: 10px 0 5px 5px;float: left;}
+.timeTextBox{ width: 70px;margin: 10px 0 5px 5px;float: left;}
+.textBox2{ width: 180px;margin: 10px 0 10px 10px;float: left;}
+.textBox2adjacent{ width: 180px;margin: 5px 0 10px 5px;float: left;}
+.label{ margin: 10px 0px 10px 10px;float: left;text-align: right;width: 120px;color: white;}
+#jobTitleTextBox{ width: 100px;margin: 10px 0 10px 10px;float: left;}
+.labelFreeTextArea{ margin-left: 10px;color: white;margin-right: 10px;padding: 5px;}
+.freeTextArea{ margin-left: 10px;margin-bottom: 10px;color: black;}
+.label2{ margin: 15px 0px 10px 10px;float: left;text-align: right;width:90px;color: white;}
+.labelTitle{ margin: 15px 0px 10px 10px;float: left;text-align: right;width: 70px;color: white;}
+.checkBox{ float: left;margin: 5px 0px 5px 20px;}
+.label3{ margin: 5px 0px 5px 10px;text-align: left;width: 150px;color: white;float: left;}
+.label4{ margin: 5px 0px 5px 10px;text-align: left;width: 400px;color: white;float: left;}
+.label5{ margin: 5px 0px 5px 10px;text-align: left;width: 170px;color: white;float: left;}
+.label3Adjacent{ margin: 5px 0px 5px 10px;text-align: left;width: 90px;color: white;float: left;}
+.linkButton{background-color: white;color: #0D5A99;margin-left: 10px; padding: 5px;font-size: smaller;margin:10px 0px 10px 10px;float:left;text-decoration: none;}
+#btnOrgSubmit{background-color: white;color: #0D5A99;margin-right: 30px;width: 56px;height: 35px;padding: 5px;font-size: smaller;margin-bottom: 20px;float:right;}
+.btnSubmit{background-color: white;color: #0D5A99;margin-right: 30px;width: 56px;height: 35px;padding: 5px;font-size: smaller;margin-bottom: 20px;float:right;}
+.OrdinaryButtonInline{color: #0D5A99;margin-left: 10px;float:left;color: black;}
+.btnSubmitRightJustify{background-color: white;color: #0D5A99;margin-left: 10px;width: 120px;height: 35px;padding: 5px;font-size:smaller;margin-bottom: 20px;float: right;}
+ul.employerSubMenu{ list-style: none;margin: 40px 0px 20px 40px;width:290px;}
+li.employerSubMenuListItem{ padding: 20px;border-color: #0D5A99;border-style: solid;border-width: thick;font-weight: bold;color:#0D5A99; font-size:larger;background-color: white;}
+li.employerSubMenuListItem a{ text-decoration: none;color: #0d5a99;}
+.validationSummary{width: 80%;color: red;margin: 5px 0px 5px 10px;}
+.addhocMessageLabel{font-weight:bold;font-size:large;color:white;margin-left:20px;margin-top:40px;}
+.error{ color: red;margin-left: 5px;}
+.lableTimes{ margin: 15px 0px 10px 10px;float: left;text-align: right;width:70px;color: white;}
+div.opp-links{ border-radius: 5px 5px 5px 5px;width: 110px;height: auto;margin-right: auto;margin-left: auto;border-color: #0d5a99;border-style: solid;border-width:thick;font-size: large;color: black; }
+.opportunity-row{ width: 85%;margin-right: auto;margin-left: auto;}
+.opportunity-cell{ width: 20%;*width: 19%;margin-top: 40px;float: left;text-align: center;}
+div.leftImage{ margin: 30px 20px 20px 30px;float: left;}
+div.rightLinks{ margin: 20px 20px 20px 10px;color: white;font-size: large;float: left;}
+.contactUs{ margin-top: 25px;text-align: center;padding: 15px;color: white;font-weight: bold;}
+.smallBlurb{ margin-top: 50px;padding: 15px;color: white;}
+div.contactUs a{ color: white;}
+img{border:0}
+div#midSection{ margin: 0px; *margin-top: -15px;*margin-bottom: -20px;}

@@ -1,0 +1,264 @@
+﻿@{
+    ViewBag.Title = "LoadEmploymentOpportunity";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.validator.unobtrusive.parse($('form#LoadOpp'));
+        $('#AddressPanel').slideUp();
+        $('#IsAnotherAddress').click(function () {
+            if (this.checked) {
+                $('#AddressPanel').slideDown();
+            } else {
+
+                $('#AddressPanel').slideUp();
+            }
+        });
+        $('#AddressLine2').css('display', 'none');
+        $('#AddressLine2').change(function () {
+            $('#txtAddressLine2').val($(this).val());
+
+            $('#AddressLine2').css('display', 'none');
+            $('#txtAddressLine2').css('display', 'block');
+        });
+        $("div#addressLookUp").click(function () {
+            var postCode = $('#PostCode').val();
+            $.ajax({
+                url: "/Home/LookUpPostCode?postCode=" + postCode,
+                dataType: "json",
+                success: function (data) {
+                    var $AddressLine2 = $('#AddressLine2');
+                    var $txtAddressLine2 = $('#txtAddressLine2');
+                    $AddressLine2.css('display', 'block');
+                    $txtAddressLine2.css('display', 'none');
+                    $AddressLine2.empty();
+                    $AddressLine2.append('<option value="-"> Choose </option>');
+                    if (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            //populate AddressLine1 List
+                            $AddressLine2.append('<option value="' + data[i].AddressLine2 + '">' + data[i].AddressLine2 + '</option>');
+                        }
+                        $('#AddressLine1').val(data[0].AddressLine1);
+                        $('#City').val(data[0].City);
+                        $('#PostCode').val(postCode);
+                        $('#Country').val(data[0].Country);
+                    }
+                },
+                error: function (data) {
+
+                }
+            });
+        });
+
+        $('div.checkboxList input[type="checkbox"]').click(function () {
+            if ($(this).prop("checked") == false)
+                $(this).prop("checked", false);
+            else
+                $(this).prop("checked", true);
+        });
+
+
+        $('#btnOrgSubmit').click(function () {
+
+            $('div.validationSummary > ul').empty();
+            var hasCheck = false;
+            var li = "<li>At least one choice is required from Opportunity Type</li>";
+            var l2 = "<li>Maximum allowed description word length is 50</li>";
+
+            var description = $('#OpportunityDescription').prop('value');
+            var correctDescLength = CheckMaxWords(description);
+            debugger;
+            $('div.checkboxList input[type="checkbox"]').each(function () {
+                hasCheck = $(this).prop('checked');
+                if (hasCheck) {
+                    $(this).attr('value', $(this).prop('name'));
+                }
+            });
+
+            $('div.checkboxList input[type="checkbox"]').each(function () {
+                hasCheck = $(this).prop('checked');
+                if (hasCheck == true) {
+                    return false;
+                } else return true;
+                
+            });
+
+
+            $('form#LoadOpp').validate();
+            var mvcValidation = $('form#LoadOpp').valid();
+            
+            if (mvcValidation == true) {
+                $('div.validation-summary-errors').css('display', 'none');
+                if (!hasCheck) {
+                    $('div.validationSummary > ul').append(li);
+                }
+                
+                if (!correctDescLength) {
+
+                    var ul = $('div.validationSummary > ul');
+
+                    if (typeof(ul) != 'undefined') {
+                        ul.append(l2);
+                    } else {
+                        var ul2 = $('div.validationSummary ul');
+                        if (typeof(ul2) != 'undefined') {
+                            ul2.append(l2);
+                        } else {
+                            $('div.validationSummary ul').append(l2);
+                        }
+                    }
+                }
+            } else {
+                
+                if (!hasCheck)
+                    $('div.validation-summary-errors ul').append(li);
+                
+                if (!correctDescLength) {
+                    $('div.validation-summary-errors ul').append(l2);
+                }
+            }
+            return hasCheck && mvcValidation && correctDescLength;
+        });
+        
+
+    });
+    
+    function CheckMaxWords(words) {
+        if (words == 'undefined' || words == null || words == '') return true;
+        return words.split(' ').length <= 50;
+    }
+</script>
+
+<div>
+    @section TwoColumnSection
+    {
+        <div class="main-content-wrapper">
+            <h2 style="margin-left: 20px; margin-top: 7px;">@ViewBag.EmploymentType</h2>
+
+            <div id="MainSection">
+                @using (Html.BeginForm("LoadEmploymentOpportunity", "Home", FormMethod.Post, new { @id = "LoadOpp" }))
+                {
+                    <div class="validationSummary">
+                        <ul></ul>
+                        @Html.ValidationSummary(false)
+                    </div>
+                    
+                    <div>
+                        <div class="labelFreeTextArea" style="font-weight: bold">Contact Details</div>
+                        <br />
+                        <div>
+                            @Html.Label("Company name*", new { @class = "labelTitle" })
+                            @Html.TextBox("OrganisationName", null, new { @class = "textBox2" })
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            @Html.Label("Title*", new { @class = "labelTitle" })
+                            @Html.DropDownList("Title", (IEnumerable<SelectListItem>)ViewBag.Tit, new { @class = "dropDownListTitle" })
+                            @Html.Label("First name*", new { @class = "label2" })
+                            @Html.TextBox("FirstName", null, new { @class = "textBox" })
+                            @Html.Label("Last name*", new { @class = "label2" })
+                            @Html.TextBox("LastName", null, new { @class = "textBox" })
+                            <div style="clear: both;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="labelFreeTextArea" style="font-weight: bold">Job Details</div>
+                        <br />
+                        @Html.Label("Job title*", new { @class = "label2" })
+                        @Html.TextBox("JobTitle", null, new { @id = "jobTitleTextBox" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div>
+                        @Html.Label("Opportunity Type*", new { @class = "labelFreeTextArea" })
+                    </div>
+                    <div class="checkboxList">
+                        <input type="checkbox" name="OpportunityType.AirLineAndAirport" class="checkBox" value="" id="AirLineAndAirport" checked="@(Model != null && Model.OpportunityType.AirLineAndAirport != null)" />
+                        @Html.Label("Airline and Airport", new { @class = "label3" })
+                        <input type="checkbox" name="OpportunityType.Education" class="checkBox" value="" id="Education" checked="@(Model != null && Model.OpportunityType.Education != null)" />
+                        @Html.Label("Education", new { @class = "label3" })
+                        <input type="checkbox" name="OpportunityType.Hospitality" class="checkBox" value="" id="Hospitality" checked="@(Model != null && Model.OpportunityType.Hospitality != null)" />
+                        @Html.Label("Hospitality", new { @class = "label3" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div class="checkboxList">
+                        <input type="checkbox" name="OpportunityType.RecruitmentAgency" class="checkBox" value="" id="RecruitmentAgency" checked="@(Model != null && Model.OpportunityType.RecruitmentAgency != null)" />
+                        @Html.Label("Recruitment Agency", new { @class = "label3" })
+                        <input type="checkbox" name="OpportunityType.SportAndLeisure" class="checkBox" value="" id="SportAndLeisure" checked="@(Model != null && Model.OpportunityType.SportAndLeisure != null)" />
+                        @Html.Label("Sport and Leisure", new { @class = "label3" })
+                        <input type="checkbox" name="OpportunityType.Other" class="checkBox" value="" id="Other" checked="@(Model != null && Model.OpportunityType.Other != null)" />
+                        @Html.Label("Other", new { @class = "label3" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div style="clear: both;"></div>
+                    <div>
+                        <div class="labelFreeTextArea">Description Of Opportunity*</div>
+                        <br />
+                        <div class="labelFreeTextArea">
+                            @Html.TextArea("OpportunityDescription", null, new { @cols = 70, @rows = 10, @class = "freeTextArea" })
+                            <br />
+                        </div>
+                    </div>
+                    <div>
+                        <br />
+                        <div class="labelFreeTextArea">Is the address location of the job the same as your organisation registration one?</div>
+                        <br />
+                        <input type="checkbox" name="IsAnotherAddress" class="checkBox" id="IsAnotherAddress" />
+                        @Html.Label("Is it another address", new { @class = "label3" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div id="AddressPanel">
+                        <div>
+                            @Html.Label("Address Line1*", new { @class = "label" })
+                            @Html.TextBox("Address.AddressLine1", null, new { @class = "textBox2", id = "AddressLine1" })
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            @Html.Label("Address Line2", new { @class = "label" })
+                            @Html.TextBox("Address.AddressLine2", null, new { @class = "textBox2", id = "txtAddressLine2" })
+                            <select id="AddressLine2" class="textBox2">
+                            </select>
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            @Html.Label("City*", new { @class = "label" })
+                            @Html.TextBox("Address.City", null, new { @class = "textBox2", id = "City" })
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div>
+                            @Html.Label("Post Code*", new { @class = "label" })
+                            @Html.TextBox("Address.PostCode", null, new { @class = "textBox2", id = "PostCode" })
+                            <div id="addressLookUp" class="linkButton">PostCode lookup</div>
+                            <div style="clear: both;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        @Html.Label("Landline No*", new { @class = "label" })
+                        @Html.TextBox("LandlineNo", null, new { @class = "textBox2" })
+                        @Html.Label("Mobile No", new { @class = "labelTitle" })
+                        @Html.TextBox("MobileNo", null, new { @class = "textBox2" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div>
+                        @Html.Label("Email*", new { @class = "label" })
+                        @Html.TextBox("Email", null, new { @class = "textBox2" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div>
+                        @Html.Label("Organisation Website", new { @class = "label" })
+                        @Html.TextBox("OrgWebsite", null, new { @class = "textBox2" })
+                        <div style="clear: both;"></div>
+                    </div>
+                    <div>
+                        <input type="submit" id="btnOrgSubmit" value="Submit" class="btnSubmit" />
+                    </div>
+                }
+            </div>
+
+            <div id="RightColSection">
+                &nbsp;
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+    }
+
+</div>

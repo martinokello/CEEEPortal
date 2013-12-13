@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = "IndexMentoring";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model CEEEPortal.Models.LoginModel
+@{
+    ViewBag.Title = "Home Page";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('li.employerSubMenuListItem').hover(function () {
+            $(this).css('background-color', '#E6E7E8');
+        }, function () {
+            $(this).css('background-color', 'white');
+        });
+        $('li.employerSubMenuListItem').click(function () {
+            var link = $(this).children(':first').attr('href');
+            document.location.href = link;
+        });
+    });
+</script>
+@using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }))
+{
+    @Html.AntiForgeryToken()
+    <div id="midSection" style="clear: both; background-image: url('@Url.Content("~/Images/home-banner.png")'); width: 980px; height: 263px;">
+        @Html.Partial("_PartialLogin2")
+        @section TwoColumnSection
+        {
+            <div class="main-content-wrapper">
+                <div id="MainSection">
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+                        <h3 style="color:white;margin-left:20px;">You need to be logged in to access the functions</h3>     
+                    }
+                    <ul class="employerSubMenu">
+                        <li class="employerSubMenuListItem"><a href="/Mentoring/MentoringDetails">Edit Mentoring Details</a></li>
+                    </ul>
+                </div>
+                <div id="RightColSection">
+                    &nbsp;
+                </div>
+                <div style="clear: both;"></div>
+            </div>
+        }
+    </div>
+}

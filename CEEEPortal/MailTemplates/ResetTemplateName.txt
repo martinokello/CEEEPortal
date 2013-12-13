@@ -1,0 +1,8 @@
+﻿Dear [Username],
+
+You requested a change to your password. Your password has been changed to [Password].
+
+Do please log onto the University Of West London Employer Portal to Change you password to a secure one.
+
+Kindest regards
+UWL Centre for Employment and Employee Engagement.
