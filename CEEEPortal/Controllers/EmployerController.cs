@@ -249,16 +249,25 @@ namespace CEEEPortal.Controllers
         {
             if (ModelState.IsValid)
             {
+                
                 SetOrgUpdateViewModelProperties(model);
 
                 var client =
                     CeeePortalBusiness.GetClientDetailsByID(CeeePortalBusiness.GetClientIdByName(User.Identity.Name));
+                if (!model.Email.Equals(User.Identity.Name) && !CeeePortalBusiness.CheckUserNotExists(model.Email))
+                {
+                    ModelState.AddModelError("Email already exists",
+                         "Email already exists, you can't change to this email address.");
+
+                    return View("UpdateDetails", model);
+                }
                 model.UserId = CeeePortalBusiness.GetUserIdByUsername(User.Identity.Name);
+                 
                 var actionResult = CeeePortalBusiness.UpdateClientDetails(model);
 
                 if (actionResult)
                 {
-                    WebSecurity.ChangePassword(User.Identity.Name, model.OldPassword, model.NewPassword);
+                    WebSecurity.ChangePassword(model.Email, model.OldPassword, model.NewPassword);
                     var mailMessage = new MailMessage();
                     var physicalPath =
                         Server.MapPath("~/MailTemplate/" + ConfigurationManager.AppSettings["TemplateName"]);
@@ -270,7 +279,8 @@ namespace CEEEPortal.Controllers
                     mailMessage.Subject = string.Format("New Employer {0} has registered for Employee prospects",
                                                         model.OrganisationName);
                     //mailService.SendMail(mailMessage);
-                    return View("SuccessView");
+
+                    return RedirectToAction("SignOut", "Account");
                 }
                 else
                 {
@@ -1164,4 +1174,5 @@ namespace CEEEPortal.Controllers
         }
     }
 }
+
 
