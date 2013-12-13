@@ -1,10 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
+using System.Net.Mail;
 using System.Transactions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using CEEEServices.Interfaces;
 using DotNetOpenAuth.AspNet;
 using Microsoft.Web.WebPages.OAuth;
 using WebMatrix.WebData;
@@ -17,6 +20,15 @@ namespace CEEEPortal.Controllers
     [InitializeSimpleMembership]
     public class AccountController : Controller
     {
+        private IMailService mailService;
+        private IMailTemplateService mailTemplateService;
+
+        public AccountController(IMailService mailService, IMailTemplateService mailTemplateService)
+        {
+            this.mailService = mailService;
+            this.mailTemplateService = mailTemplateService;
+        }
+
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
@@ -43,7 +55,7 @@ namespace CEEEPortal.Controllers
                 return RedirectToLocal(returnUrl);
             }
             // If we got this far, something failed, redisplay form
-            return View("IndexMentoring", model);
+            return View("Index", model);
         }
 
         //
@@ -54,6 +66,7 @@ namespace CEEEPortal.Controllers
             WebSecurity.Logout();
             return RedirectToAction("Index", "Home");
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
@@ -106,12 +119,41 @@ namespace CEEEPortal.Controllers
         [AllowAnonymous]
         public ActionResult ResetPassword(ResetPasswordModel model)
         {
-            //var userToken = WebSecurity.GeneratePasswordResetToken(Username);
-
-            //Use Smtp Service to Send email to user with user token:
+            ModelState.Clear();
 
             if (ModelState.IsValid)
-                return View("EmailSentPasswordReset");
+            {            
+                var clientId = CEEEPortal.Business.CeeePortalBusiness.GetClientIdByName(model.Email);
+                if (clientId > 0)
+                {
+                    var userToken = WebSecurity.GeneratePasswordResetToken(model.Email);
+                    var clientDetails = CEEEPortal.Business.CeeePortalBusiness.GetClientDetailsByID(clientId);
+                    //Use Smtp Service to Send email to user with user token:
+                    string token = WebSecurity.GeneratePasswordResetToken(clientDetails.Email);
+                    WebSecurity.ResetPassword(token, "deltax505");
+                    var mailMessage = new MailMessage();
+                    var physicalPath =
+                        Server.MapPath("~/MailTemplate/" + ConfigurationManager.AppSettings["ResetTemplateName"]);
+
+
+                    mailMessage.Body =
+                        mailTemplateService.LoadTemplateByName(physicalPath)
+                                           .Replace("[Username]", clientDetails.Email)
+                                           .Replace("Password", "deltax505");
+                    mailMessage.From = new MailAddress("info@uwl.ac.uk");
+                    mailMessage.To.Add(new MailAddress("employment.services@uwl.ac.uk"));
+                    mailMessage.To.Add(new MailAddress(clientDetails.Email));
+                    mailMessage.Subject = string.Format("Dear {0} ,your Password has been reset",
+                                                        clientDetails.FirstName + " " + clientDetails.LastName);
+                    //mailService.SendMail(mailMessage);
+                    return View("EmailSentPasswordReset");
+                }
+                else
+                {
+                    ModelState.AddModelError("UserNotExist","The user does not exist");
+                    return View(model);
+                }
+            }
             else return View(model);
         }
         //
@@ -398,3 +440,4 @@ namespace CEEEPortal.Controllers
         #endregion
     }
 }
+
