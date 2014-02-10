@@ -813,6 +813,8 @@ namespace CEEEDataAccess.Repository
                                                oneDayChallengeCharityJob.SessionPlanFileName.Substring(
                                                    oneDayChallengeCharityJob.SessionPlanFileName.LastIndexOf(".")),
                                                oneDayChallengeCharityJob.SessionPlanFileName);
+                                               
+                    transactScope.Complete();
                     return true;
                 }
                 catch (DbEntityValidationException ex)
@@ -822,10 +824,6 @@ namespace CEEEDataAccess.Repository
                 catch (Exception e)
                 {
                     return false;
-                }
-                finally
-                {
-                    transactScope.Complete();
                 }
             }
         }
@@ -946,7 +944,8 @@ namespace CEEEDataAccess.Repository
                                                          oneDayChallengeCharityJob.SessionPlanFileName.Substring(
                                                              oneDayChallengeCharityJob.SessionPlanFileName.LastIndexOf(
                                                                  ".")), oneDayChallengeCharityJob.SessionPlanFileName);
-                            return true;
+                            
+                    transactScope.Complete();
                             return true;
                         }
                     }
@@ -959,10 +958,6 @@ namespace CEEEDataAccess.Repository
                         return false;
                     }
 
-                }
-                finally
-                {
-                    transactScope.Complete();
                 }
             }
         }
@@ -1265,6 +1260,8 @@ namespace CEEEDataAccess.Repository
                                                    volunteeringPlacementJob.RoleDescriptionFileName
                                                                            .LastIndexOf(".")),
                                                volunteeringPlacementJob.RoleDescriptionFileName);
+                                               
+                    transactScope.Complete();
                     return true;
                 }
                 catch (DbEntityValidationException ex)
@@ -1274,10 +1271,6 @@ namespace CEEEDataAccess.Repository
                 catch (Exception e)
                 {
                     return false;
-                }
-                finally
-                {
-                    transactScope.Complete();
                 }
             }
         }
@@ -1459,7 +1452,10 @@ namespace CEEEDataAccess.Repository
                                                          volunteeringPlacementJob.RoleDescriptionFileName.LastIndexOf(
                                                              ".")),
                                                      volunteeringPlacementJob.RoleDescriptionFileName);
-                        return true;
+                       
+                       
+                    transactScope.Complete();
+                    return true;
                     }
                 }
                 catch (DbEntityValidationException ex)
@@ -1469,10 +1465,6 @@ namespace CEEEDataAccess.Repository
                 catch (Exception e)
                 {
                     return false;
-                }
-                finally
-                {
-                    transactScope.Complete();
                 }
             }
         }
@@ -1543,6 +1535,7 @@ namespace CEEEDataAccess.Repository
                             jobDocument.Completed = "N";
                             dbContext.JobDocuments.Add(jobDocument);
                             dbContext.SaveChanges();
+                    transactScope.Complete();
                             return true;
                         }
 
@@ -1555,13 +1548,8 @@ namespace CEEEDataAccess.Repository
                     {
                         return false;
                     }
-                    finally
-                    {
-                        transactScope.Complete();
-                    }
                 }
 
-                return true;
             }
         }
 
@@ -1605,6 +1593,7 @@ namespace CEEEDataAccess.Repository
 
                         dbContext.SaveChanges();
 
+                    transactScope.Complete();
                         return true;
                     }
                     catch (DbEntityValidationException ex)
@@ -1614,10 +1603,6 @@ namespace CEEEDataAccess.Repository
                     catch (Exception e)
                     {
                         return false;
-                    }
-                    finally
-                    {
-                        transactScope.Complete();
                     }
                 }
             }
