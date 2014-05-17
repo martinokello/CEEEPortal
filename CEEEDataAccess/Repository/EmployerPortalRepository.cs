@@ -82,12 +82,12 @@ namespace CEEEDataAccess.Repository
                         var recruitment = oppTypes.RecruitmentAgency ?? null;
                         var sport = oppTypes.SportAndLeisure ?? null;
 
-                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType {OpportunityName = airline});
-                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType {OpportunityName = education});
-                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType {OpportunityName = hospitality});
-                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType {OpportunityName = other});
-                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType {OpportunityName = recruitment});
-                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType {OpportunityName = sport});
+                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType { OpportunityName = airline });
+                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType { OpportunityName = education });
+                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType { OpportunityName = hospitality });
+                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType { OpportunityName = other });
+                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType { OpportunityName = recruitment });
+                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType { OpportunityName = sport });
 
                         location.Code = orgDetails.Address.PostCode;
                         location.Description = orgDetails.Address.AddressLine1 + "," + orgDetails.Address.AddressLine2 +
@@ -187,12 +187,12 @@ namespace CEEEDataAccess.Repository
                         var recruitment = oppTypes.RecruitmentAgency ?? null;
                         var sport = oppTypes.SportAndLeisure ?? null;
 
-                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType {OpportunityName = airline});
-                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType {OpportunityName = education});
-                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType {OpportunityName = hospitality});
-                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType {OpportunityName = other});
-                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType {OpportunityName = recruitment});
-                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType {OpportunityName = sport});
+                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType { OpportunityName = airline });
+                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType { OpportunityName = education });
+                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType { OpportunityName = hospitality });
+                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType { OpportunityName = other });
+                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType { OpportunityName = recruitment });
+                        ceeeUser.CeeeOpportunityTypes.Add(new CeeeOpportunityType { OpportunityName = sport });
                         ceeeClientAttributes.CeeeUser = ceeeUser;
                         ceeeClientAttributes.Client = client;
                         ceeeClientAttributes.CompanySize = ceeeUser.CompanySize;
@@ -230,9 +230,9 @@ namespace CEEEDataAccess.Repository
                 {
                     return false;
                 }
-            transactScope.Complete();
+                transactScope.Complete();
 
-            return true;
+                return true;
             }
         }
 
@@ -406,8 +406,8 @@ namespace CEEEDataAccess.Repository
                     return false;
                 }
                 transactScope.Complete();
-                
-                    return true;
+
+                return true;
             }
         }
 
@@ -813,7 +813,7 @@ namespace CEEEDataAccess.Repository
                                                oneDayChallengeCharityJob.SessionPlanFileName.Substring(
                                                    oneDayChallengeCharityJob.SessionPlanFileName.LastIndexOf(".")),
                                                oneDayChallengeCharityJob.SessionPlanFileName);
-                                               
+
                     transactScope.Complete();
                     return true;
                 }
@@ -835,130 +835,127 @@ namespace CEEEDataAccess.Repository
             {
                 try
                 {
-                    try
+                    using (var dbContext = new ProNetTestEntities())
                     {
-                        using (var dbContext = new ProNetTestEntities())
+                        var job = dbContext.Jobs.SingleOrDefault(p => p.JobId == jobId);
+
+                        var jobDescription = job.CeeeJobDescriptions.SingleOrDefault(p => p.JobID == job.JobId);
+
+
+                        var client = job.Client;
+
+                        var oneDayChallenge = jobDescription.CeeeVolunteeringOneDayChallenge;
+
+                        var volunteeringType = oneDayChallengeCharityJob.OpportunityType.ToString();
+
+                        if (client == null)
                         {
-                            var job = dbContext.Jobs.SingleOrDefault(p => p.JobId == jobId);
-
-                            var jobDescription = job.CeeeJobDescriptions.SingleOrDefault(p => p.JobID == job.JobId);
-
-
-                            var client = job.Client;
-
-                            var oneDayChallenge = jobDescription.CeeeVolunteeringOneDayChallenge;
-
-                            var volunteeringType = oneDayChallengeCharityJob.OpportunityType.ToString();
-
-                            if (client == null)
-                            {
-                                client = dbContext.Clients.SingleOrDefault(p => p.ClientID == job.ClientId);
-                                if (client == null) return false;
-                            }
-
-                            oneDayChallenge.OrganisationType = oneDayChallengeCharityJob.OrganisationType;
-                            oneDayChallenge.ContactName = oneDayChallengeCharityJob.ContactName;
-                            oneDayChallenge.ContactEmail = oneDayChallengeCharityJob.ContactEmail;
-                            oneDayChallenge.AlternateEmail = oneDayChallengeCharityJob.AlternateEmail;
-
-                            job.ClientId = client.ClientID;
-                            job.JobRefNo = ("J0" + client.ClientID + Guid.NewGuid().ToString()).Substring(0, 10);
-                            job.Notes = oneDayChallengeCharityJob.ExperienceNeeded + "; When: " +
-                                        oneDayChallengeCharityJob.When +
-                                        "; Finishing Time: " +
-                                        oneDayChallengeCharityJob.FinishingTime;
-                            job.Published = "N";
-                            job.Archived = "N";
-                            job.UpdatedOn = DateTime.Now;
-                            job.StatusDate = DateTime.Now;
-                            job.JobTitle = oneDayChallengeCharityJob.ProjectEventTitle;
-                            jobDescription.IsVolunteering = true;
-                            jobDescription.JobDescription = oneDayChallengeCharityJob.WhatWillBeDoing;
-
-                            oneDayChallenge.ExperienceNeeded = oneDayChallengeCharityJob.ExperienceNeeded;
-                            oneDayChallenge.FinishingTime = oneDayChallengeCharityJob.FinishingTime;
-                            oneDayChallenge.BudgetPlanFile = oneDayChallengeCharityJob.BudgetFormFile;
-                            oneDayChallenge.HasCarriedOutRiskAssesment =
-                                !string.IsNullOrEmpty(oneDayChallengeCharityJob.HasCarriedOutRiskAssesment)
-                                    ? true
-                                    : false;
-                            oneDayChallenge.HasInsuranceLiability =
-                                !string.IsNullOrEmpty(oneDayChallengeCharityJob.HasInsuranceLiability) ? true : false;
-                            oneDayChallenge.IsCordinatedByUniversity =
-                                !string.IsNullOrEmpty(oneDayChallengeCharityJob.IsCordinatedByUniversity) ? true : false;
-                            oneDayChallenge.Location = oneDayChallengeCharityJob.Location;
-                            oneDayChallenge.MeetingPoint = oneDayChallengeCharityJob.MeetingPoint;
-                            oneDayChallenge.MeetingTime = oneDayChallengeCharityJob.MeetingTime;
-                            oneDayChallenge.WhatWillBeDoing = oneDayChallengeCharityJob.WhatWillBeDoing;
-                            oneDayChallenge.When = oneDayChallengeCharityJob.When;
-                            var opportunityTypes = string.Empty;
-                            opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.Administration + ",";
-                            opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.Animals + ",";
-                            opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.ChildrenYouth + ",";
-                            opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.CultureHeritage + ",";
-                            opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.Education + ",";
-                            opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.Environment + ",";
-                            opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.EthnicityReligion +
-                                                ",";
-                            opportunityTypes +=
-                                oneDayChallengeCharityJob.OpportunityCategoryType.EventProjectManagement + ",";
-                            opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.GovernanceFinance +
-                                                ",";
-                            opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.HealthSocialCare + ",";
-                            opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.IT + ",";
-                            opportunityTypes +=
-                                oneDayChallengeCharityJob.OpportunityCategoryType.InternationalDevelopment + ",";
-                            opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.LawCriminalJustice +
-                                                ",";
-                            opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.MediaCreative + ",";
-                            opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.MentoringAdvice + ",";
-                            opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.Politics + ",";
-                            opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.SocialEnterprise + ",";
-                            opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.SportsOutdoor + ",";
-                            opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.VulnerableAdults;
-
-                            oneDayChallenge.OpportunityTypes = opportunityTypes;
-                            var volunteeringTypes = dbContext.CeeeVolunteeringTypes.
-                                                              SingleOrDefault(p => p.Name == volunteeringType);
-
-                            oneDayChallenge.VolunteeringTypeId = volunteeringTypes.VolunteeringTypeID;
-                            jobDescription.CeeeVolunteeringOneDayChallenge = oneDayChallenge;
-                            dbContext.SaveChanges();
-
-                            //SaveFiles:
-                            if (!string.IsNullOrEmpty(oneDayChallengeCharityJob.BudgetFormFileName))
-                                UpdatejobDocumentByJobId(job.JobId, oneDayChallengeCharityJob.BudgetFormFile,
-                                                         oneDayChallengeCharityJob.BudgetFormFileName.Substring(
-                                                             oneDayChallengeCharityJob.BudgetFormFileName.LastIndexOf(
-                                                                 ".")), oneDayChallengeCharityJob.BudgetFormFileName);
-                            //SaveFiles:
-                            if (!string.IsNullOrEmpty(oneDayChallengeCharityJob.RiskAssesmentFormFileName))
-                                UpdatejobDocumentByJobId(job.JobId, oneDayChallengeCharityJob.RiskAssesmentFormFile,
-                                                         oneDayChallengeCharityJob.RiskAssesmentFormFileName.Substring(
-                                                             oneDayChallengeCharityJob.RiskAssesmentFormFileName
-                                                                                      .LastIndexOf(".")),
-                                                         oneDayChallengeCharityJob.RiskAssesmentFormFileName);
-                            //SaveFiles:
-                            if (!string.IsNullOrEmpty(oneDayChallengeCharityJob.SessionPlanFileName))
-                                UpdatejobDocumentByJobId(job.JobId, oneDayChallengeCharityJob.SessionPlanFile,
-                                                         oneDayChallengeCharityJob.SessionPlanFileName.Substring(
-                                                             oneDayChallengeCharityJob.SessionPlanFileName.LastIndexOf(
-                                                                 ".")), oneDayChallengeCharityJob.SessionPlanFileName);
-                            
-                    transactScope.Complete();
-                            return true;
+                            client = dbContext.Clients.SingleOrDefault(p => p.ClientID == job.ClientId);
+                            if (client == null) return false;
                         }
-                    }
-                    catch (DbEntityValidationException ex)
-                    {
-                        return false;
-                    }
-                    catch (Exception e)
-                    {
-                        return false;
-                    }
 
+                        oneDayChallenge.OrganisationType = oneDayChallengeCharityJob.OrganisationType;
+                        oneDayChallenge.ContactName = oneDayChallengeCharityJob.ContactName;
+                        oneDayChallenge.ContactEmail = oneDayChallengeCharityJob.ContactEmail;
+                        oneDayChallenge.AlternateEmail = oneDayChallengeCharityJob.AlternateEmail;
+
+                        job.ClientId = client.ClientID;
+                        job.JobRefNo = ("J0" + client.ClientID + Guid.NewGuid().ToString()).Substring(0, 10);
+                        job.Notes = oneDayChallengeCharityJob.ExperienceNeeded + "; When: " +
+                                    oneDayChallengeCharityJob.When +
+                                    "; Finishing Time: " +
+                                    oneDayChallengeCharityJob.FinishingTime;
+                        job.Published = "N";
+                        job.Archived = "N";
+                        job.UpdatedOn = DateTime.Now;
+                        job.StatusDate = DateTime.Now;
+                        job.JobTitle = oneDayChallengeCharityJob.ProjectEventTitle;
+                        jobDescription.IsVolunteering = true;
+                        jobDescription.JobDescription = oneDayChallengeCharityJob.WhatWillBeDoing;
+
+                        oneDayChallenge.ExperienceNeeded = oneDayChallengeCharityJob.ExperienceNeeded;
+                        oneDayChallenge.FinishingTime = oneDayChallengeCharityJob.FinishingTime;
+                        oneDayChallenge.BudgetPlanFile = oneDayChallengeCharityJob.BudgetFormFile;
+                        oneDayChallenge.HasCarriedOutRiskAssesment =
+                            !string.IsNullOrEmpty(oneDayChallengeCharityJob.HasCarriedOutRiskAssesment)
+                                ? true
+                                : false;
+                        oneDayChallenge.HasInsuranceLiability =
+                            !string.IsNullOrEmpty(oneDayChallengeCharityJob.HasInsuranceLiability) ? true : false;
+                        oneDayChallenge.IsCordinatedByUniversity =
+                            !string.IsNullOrEmpty(oneDayChallengeCharityJob.IsCordinatedByUniversity) ? true : false;
+                        oneDayChallenge.Location = oneDayChallengeCharityJob.Location;
+                        oneDayChallenge.MeetingPoint = oneDayChallengeCharityJob.MeetingPoint;
+                        oneDayChallenge.MeetingTime = oneDayChallengeCharityJob.MeetingTime;
+                        oneDayChallenge.WhatWillBeDoing = oneDayChallengeCharityJob.WhatWillBeDoing;
+                        oneDayChallenge.When = oneDayChallengeCharityJob.When;
+                        var opportunityTypes = string.Empty;
+                        opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.Administration + ",";
+                        opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.Animals + ",";
+                        opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.ChildrenYouth + ",";
+                        opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.CultureHeritage + ",";
+                        opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.Education + ",";
+                        opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.Environment + ",";
+                        opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.EthnicityReligion +
+                                            ",";
+                        opportunityTypes +=
+                            oneDayChallengeCharityJob.OpportunityCategoryType.EventProjectManagement + ",";
+                        opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.GovernanceFinance +
+                                            ",";
+                        opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.HealthSocialCare + ",";
+                        opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.IT + ",";
+                        opportunityTypes +=
+                            oneDayChallengeCharityJob.OpportunityCategoryType.InternationalDevelopment + ",";
+                        opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.LawCriminalJustice +
+                                            ",";
+                        opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.MediaCreative + ",";
+                        opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.MentoringAdvice + ",";
+                        opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.Politics + ",";
+                        opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.SocialEnterprise + ",";
+                        opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.SportsOutdoor + ",";
+                        opportunityTypes += oneDayChallengeCharityJob.OpportunityCategoryType.VulnerableAdults;
+
+                        oneDayChallenge.OpportunityTypes = opportunityTypes;
+                        var volunteeringTypes = dbContext.CeeeVolunteeringTypes.
+                                                          SingleOrDefault(p => p.Name == volunteeringType);
+
+                        oneDayChallenge.VolunteeringTypeId = volunteeringTypes.VolunteeringTypeID;
+                        jobDescription.CeeeVolunteeringOneDayChallenge = oneDayChallenge;
+                        dbContext.SaveChanges();
+
+                        //SaveFiles:
+                        if (!string.IsNullOrEmpty(oneDayChallengeCharityJob.BudgetFormFileName))
+                            UpdatejobDocumentByJobId(job.JobId, oneDayChallengeCharityJob.BudgetFormFile,
+                                                     oneDayChallengeCharityJob.BudgetFormFileName.Substring(
+                                                         oneDayChallengeCharityJob.BudgetFormFileName.LastIndexOf(
+                                                             ".")), oneDayChallengeCharityJob.BudgetFormFileName);
+                        //SaveFiles:
+                        if (!string.IsNullOrEmpty(oneDayChallengeCharityJob.RiskAssesmentFormFileName))
+                            UpdatejobDocumentByJobId(job.JobId, oneDayChallengeCharityJob.RiskAssesmentFormFile,
+                                                     oneDayChallengeCharityJob.RiskAssesmentFormFileName.Substring(
+                                                         oneDayChallengeCharityJob.RiskAssesmentFormFileName
+                                                                                  .LastIndexOf(".")),
+                                                     oneDayChallengeCharityJob.RiskAssesmentFormFileName);
+                        //SaveFiles:
+                        if (!string.IsNullOrEmpty(oneDayChallengeCharityJob.SessionPlanFileName))
+                            UpdatejobDocumentByJobId(job.JobId, oneDayChallengeCharityJob.SessionPlanFile,
+                                                     oneDayChallengeCharityJob.SessionPlanFileName.Substring(
+                                                         oneDayChallengeCharityJob.SessionPlanFileName.LastIndexOf(
+                                                             ".")), oneDayChallengeCharityJob.SessionPlanFileName);
+
+                        transactScope.Complete();
+                        return true;
+                    }
                 }
+                catch (DbEntityValidationException ex)
+                {
+                    return false;
+                }
+                catch (Exception e)
+                {
+                    return false;
+                }
+
             }
         }
 
@@ -1260,7 +1257,7 @@ namespace CEEEDataAccess.Repository
                                                    volunteeringPlacementJob.RoleDescriptionFileName
                                                                            .LastIndexOf(".")),
                                                volunteeringPlacementJob.RoleDescriptionFileName);
-                                               
+
                     transactScope.Complete();
                     return true;
                 }
@@ -1452,10 +1449,10 @@ namespace CEEEDataAccess.Repository
                                                          volunteeringPlacementJob.RoleDescriptionFileName.LastIndexOf(
                                                              ".")),
                                                      volunteeringPlacementJob.RoleDescriptionFileName);
-                       
-                       
-                    transactScope.Complete();
-                    return true;
+
+
+                        transactScope.Complete();
+                        return true;
                     }
                 }
                 catch (DbEntityValidationException ex)
@@ -1485,7 +1482,7 @@ namespace CEEEDataAccess.Repository
                                                 jd.DocumentId == d.DocumentID && jd.JobId == jobId &&
                                                 dc.DocumentId == d.DocumentID &&
                                                 d.Description == fileName
-                                            select new {Document = d, DocumentContent = dc};
+                                            select new { Document = d, DocumentContent = dc };
                         if (jobDocuments1.Any())
                         {
                             var document = jobDocuments1.ToList()[0].Document;
@@ -1535,7 +1532,7 @@ namespace CEEEDataAccess.Repository
                             jobDocument.Completed = "N";
                             dbContext.JobDocuments.Add(jobDocument);
                             dbContext.SaveChanges();
-                    transactScope.Complete();
+                            transactScope.Complete();
                             return true;
                         }
 
@@ -1551,6 +1548,7 @@ namespace CEEEDataAccess.Repository
                 }
 
             }
+            return false;
         }
 
         private bool SaveJobDocumentByJobId(int jobId, byte[] docContent, string fileExtension, string fileName)
@@ -1593,7 +1591,7 @@ namespace CEEEDataAccess.Repository
 
                         dbContext.SaveChanges();
 
-                    transactScope.Complete();
+                        transactScope.Complete();
                         return true;
                     }
                     catch (DbEntityValidationException ex)
