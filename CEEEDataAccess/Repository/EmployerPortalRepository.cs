@@ -41,8 +41,7 @@ namespace CEEEDataAccess.Repository
 
         public bool SaveClientDetails(OrgRegFormTO orgDetails)
         {
-            {
-                    var location = new Location();
+                var location = new Location();
                     var client = new Client();
                     var ceeeClientAttributes = new CeeeClientAttribute();
 
