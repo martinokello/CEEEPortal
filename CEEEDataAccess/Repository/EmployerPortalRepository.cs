@@ -41,10 +41,7 @@ namespace CEEEDataAccess.Repository
 
         public bool SaveClientDetails(OrgRegFormTO orgDetails)
         {
-            using (var transactScope = new TransactionScope())
             {
-                try
-                {
                     var location = new Location();
                     var client = new Client();
                     var ceeeClientAttributes = new CeeeClientAttribute();
@@ -146,17 +143,12 @@ namespace CEEEDataAccess.Repository
                 {
                     return false;
                 }
-                transactScope.Complete();
                 return true;
-            }
         }
 
         public bool UpdateClientDetails(OrgRegFormTO orgDetails)
         {
-            using (var transactScope = new TransactionScope())
-            {
-
-                try
+            try
                 {
                     Client client = null;
 
@@ -230,10 +222,7 @@ namespace CEEEDataAccess.Repository
                 {
                     return false;
                 }
-                transactScope.Complete();
-
                 return true;
-            }
         }
 
         public GraduateEmployerTO GetGraduateOrStudentJob(int jobId)
@@ -273,10 +262,7 @@ namespace CEEEDataAccess.Repository
 
         public bool SaveGraduateOrStudentJob(GraduateEmployerTO graduateOrStudentJob, int clientID)
         {
-            using (var transactScope = new TransactionScope())
-            {
-
-                try
+            try
                 {
                     var job = new Job();
                     var jobDescription = new CeeeJobDescription();
@@ -339,17 +325,12 @@ namespace CEEEDataAccess.Repository
                 {
                     return false;
                 }
-                transactScope.Complete();
                 return true;
-            }
         }
 
         public bool UpdateGraduateOrStudentJob(GraduateEmployerTO graduateOrStudentJob, int jobId)
         {
-            using (var transactScope = new TransactionScope())
-            {
-
-                try
+            try
                 {
                     using (var dbContext = new ProNetTestEntities())
                     {
@@ -405,10 +386,7 @@ namespace CEEEDataAccess.Repository
                 {
                     return false;
                 }
-                transactScope.Complete();
-
                 return true;
-            }
         }
 
         public SandwichPlacementTO GetSandwichOrPlacementJob(int jobId)
@@ -453,10 +431,7 @@ namespace CEEEDataAccess.Repository
 
         public bool SaveSandwichOrPlacementJob(SandwichPlacementTO sandwichPlacementJob, int clientID)
         {
-            using (var transactScope = new TransactionScope())
-            {
-
-                try
+            try
                 {
                     var job = new Job();
                     var jobDescription = new CeeeJobDescription();
@@ -526,16 +501,11 @@ namespace CEEEDataAccess.Repository
                     return false;
                 }
 
-                transactScope.Complete();
                 return true;
-            }
         }
         public bool UpdateSandwichOrPlacementJob(SandwichPlacementTO sandwichPlacementJob, int jobId)
         {
-            using (var transactScope = new TransactionScope())
-            {
-
-                try
+             try
                 {
                     using (var dbContext = new ProNetTestEntities())
                     {
@@ -601,9 +571,7 @@ namespace CEEEDataAccess.Repository
                 {
                     return false;
                 }
-                transactScope.Complete();
                 return true;
-            }
         }
 
         public OneDayChallengeCharityVolunteerTO GetOnedDayChallengeOrCharityVolunteeringJob(int jobId)
@@ -702,9 +670,7 @@ namespace CEEEDataAccess.Repository
         public bool SaveOnedDayChallengeOrCharityVolunteeringJob(
             OneDayChallengeCharityVolunteerTO oneDayChallengeCharityJob, int clientID)
         {
-            using (var transactScope = new TransactionScope())
-            {
-                try
+            try
                 {
                     var job = new Job();
                     var jobDescription = new CeeeJobDescription();
@@ -814,7 +780,6 @@ namespace CEEEDataAccess.Repository
                                                    oneDayChallengeCharityJob.SessionPlanFileName.LastIndexOf(".")),
                                                oneDayChallengeCharityJob.SessionPlanFileName);
 
-                    transactScope.Complete();
                     return true;
                 }
                 catch (DbEntityValidationException ex)
@@ -825,15 +790,12 @@ namespace CEEEDataAccess.Repository
                 {
                     return false;
                 }
-            }
         }
 
         public bool UpdateOnedDayChallengeOrCharityVolunteeringJob(
                     OneDayChallengeCharityVolunteerTO oneDayChallengeCharityJob, int jobId)
         {
-            using (var transactScope = new TransactionScope())
-            {
-                try
+            try
                 {
                     using (var dbContext = new ProNetTestEntities())
                     {
@@ -943,7 +905,6 @@ namespace CEEEDataAccess.Repository
                                                          oneDayChallengeCharityJob.SessionPlanFileName.LastIndexOf(
                                                              ".")), oneDayChallengeCharityJob.SessionPlanFileName);
 
-                        transactScope.Complete();
                         return true;
                     }
                 }
@@ -956,7 +917,6 @@ namespace CEEEDataAccess.Repository
                     return false;
                 }
 
-            }
         }
 
         public PlacementsInternationalVolunteerTO GetPlacementOrInternationalVolunteeringJob(int jobId)
@@ -1069,9 +1029,7 @@ namespace CEEEDataAccess.Repository
         public bool SavePlacementOrInternationalVolunteeringJob(
             PlacementsInternationalVolunteerTO volunteeringPlacementJob, int clientID)
         {
-            using (var transactScope = new TransactionScope())
-            {
-                try
+           try
                 {
                     var job = new Job();
                     var jobDescription = new CeeeJobDescription();
@@ -1258,7 +1216,6 @@ namespace CEEEDataAccess.Repository
                                                                            .LastIndexOf(".")),
                                                volunteeringPlacementJob.RoleDescriptionFileName);
 
-                    transactScope.Complete();
                     return true;
                 }
                 catch (DbEntityValidationException ex)
@@ -1269,15 +1226,11 @@ namespace CEEEDataAccess.Repository
                 {
                     return false;
                 }
-            }
         }
         public bool UpdatePlacementOrInternationalVolunteeringJob(
             PlacementsInternationalVolunteerTO volunteeringPlacementJob, int jobId)
         {
-            using (var transactScope = new TransactionScope())
-            {
-
-                try
+            try
                 {
                     using (var dbContext = new ProNetTestEntities())
                     {
@@ -1451,7 +1404,6 @@ namespace CEEEDataAccess.Repository
                                                      volunteeringPlacementJob.RoleDescriptionFileName);
 
 
-                        transactScope.Complete();
                         return true;
                     }
                 }
@@ -1463,15 +1415,11 @@ namespace CEEEDataAccess.Repository
                 {
                     return false;
                 }
-            }
         }
 
         private bool UpdatejobDocumentByJobId(int jobId, byte[] docContent, string fileExtension, string fileName)
         {
-            using (var transactScope = new TransactionScope())
-            {
-
-                using (var dbContext = new ProNetTestEntities())
+           using (var dbContext = new ProNetTestEntities())
                 {
                     try
                     {
@@ -1532,7 +1480,6 @@ namespace CEEEDataAccess.Repository
                             jobDocument.Completed = "N";
                             dbContext.JobDocuments.Add(jobDocument);
                             dbContext.SaveChanges();
-                            transactScope.Complete();
                             return true;
                         }
 
@@ -1547,15 +1494,12 @@ namespace CEEEDataAccess.Repository
                     }
                 }
 
-            }
             return false;
         }
 
         private bool SaveJobDocumentByJobId(int jobId, byte[] docContent, string fileExtension, string fileName)
         {
-            using (var transactScope = new TransactionScope())
-            {
-                using (var dbContext = new ProNetTestEntities())
+            using (var dbContext = new ProNetTestEntities())
                 {
                     try
                     {
@@ -1591,7 +1535,6 @@ namespace CEEEDataAccess.Repository
 
                         dbContext.SaveChanges();
 
-                        transactScope.Complete();
                         return true;
                     }
                     catch (DbEntityValidationException ex)
@@ -1603,7 +1546,6 @@ namespace CEEEDataAccess.Repository
                         return false;
                     }
                 }
-            }
         }
         public IEnumerable<JobUpdateTO> GetClientJobsByClientId(int clientID)
         {
